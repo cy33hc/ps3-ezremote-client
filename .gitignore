@@ -3,3 +3,4 @@ _deps
 *.self
 build
 .vscode
+*.pkg

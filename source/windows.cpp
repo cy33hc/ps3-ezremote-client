@@ -283,7 +283,7 @@ namespace Windows
         static char title[64];
         sprintf(title, "ezRemote %s", lang_strings[STR_CONNECTION_SETTINGS]);
         BeginGroupPanel(title, ImVec2(833, 100));
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
         char id[256];
         std::string hidden_password = (strlen(remote_settings->password) > 0) ? std::string("*******") : "";
         ImVec2 pos;
@@ -446,7 +446,7 @@ namespace Windows
         ImGui::PopStyleVar();
 
         ImGui::SameLine();
-        ImGui::SetCursorPosX(820);
+        ImGui::SetCursorPosX(815);
         if (ImGui::Button(ICON_FA_GEAR, ImVec2(20, 0)))
         {
             show_settings = true;
@@ -458,7 +458,7 @@ namespace Windows
             ImGui::EndTooltip();
         }
 
-        ImGui::Dummy(ImVec2(0, 5));
+        ImGui::Dummy(ImVec2(0, 2));
         EndGroupPanel();
     }
 
@@ -470,18 +470,17 @@ namespace Windows
         ImVec2 pos;
 
         ImGui::Dummy(ImVec2(0, 5));
-        BeginGroupPanel(lang_strings[STR_LOCAL], ImVec2(948, 720));
-        ImGui::Dummy(ImVec2(0, 10));
+        BeginGroupPanel(lang_strings[STR_LOCAL], ImVec2(400, 400));
 
         float posX = ImGui::GetCursorPosX();
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
         ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_DIRECTORY]);
         ImGui::SameLine();
         ImVec2 size = ImGui::CalcTextSize(local_directory);
-        ImGui::SetCursorPosX(posX + 180);
+        ImGui::SetCursorPosX(posX + 70);
         ImGui::PushID("local_directory##local");
         pos = ImGui::GetCursorPos();
-        if (ImGui::Button(local_directory, ImVec2(569, 0)))
+        if (ImGui::Button(local_directory, ImVec2(255, 0)))
         {
             ime_single_field = local_directory;
             ResetImeCallbacks();
@@ -502,7 +501,7 @@ namespace Windows
         ImGui::SameLine();
 
         ImGui::PushID("refresh##local");
-        if (ImGui::Button(lang_strings[STR_REFRESH], ImVec2(155, 0)))
+        if (ImGui::Button(lang_strings[STR_REFRESH], ImVec2(65, 0)))
         {
             selected_action = ACTION_REFRESH_LOCAL_FILES;
         }
@@ -517,9 +516,9 @@ namespace Windows
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
         ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_FILTER]);
         ImGui::SameLine();
-        ImGui::SetCursorPosX(posX + 180);
+        ImGui::SetCursorPosX(posX + 70);
         ImGui::PushID("local_filter##local");
-        if (ImGui::Button(local_filter, ImVec2(569, 0)))
+        if (ImGui::Button(local_filter, ImVec2(255, 0)))
         {
             ime_single_field = local_filter;
             ResetImeCallbacks();
@@ -533,7 +532,7 @@ namespace Windows
         ImGui::SameLine();
 
         ImGui::PushID("search##local");
-        if (ImGui::Button(lang_strings[STR_SEARCH], ImVec2(155, 0)))
+        if (ImGui::Button(lang_strings[STR_SEARCH], ImVec2(65, 0)))
         {
             selected_action = ACTION_APPLY_LOCAL_FILTER;
         }
@@ -545,9 +544,8 @@ namespace Windows
             ImGui::EndTooltip();
         }
 
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
-
-        ImGui::BeginChild("Local##ChildWindow", ImVec2(919, 720));
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+        ImGui::BeginChild("Local##ChildWindow", ImVec2(400, 300));
         ImGui::Separator();
         ImGui::Columns(2, "Local##Columns", true);
         int i = 0;
@@ -559,14 +557,14 @@ namespace Windows
         for (int j = 0; j < local_files.size(); j++)
         {
             DirEntry item = local_files[j];
-            ImGui::SetColumnWidth(-1, 740);
+            ImGui::SetColumnWidth(-1, 340);
             ImGui::PushID(i);
             auto search_item = multi_selected_local_files.find(item);
             if (search_item != multi_selected_local_files.end())
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
             }
-            if (ImGui::Selectable(item.name, false, ImGuiSelectableFlags_SpanAllColumns, ImVec2(919, 0)))
+            if (ImGui::Selectable(item.name, false, ImGuiSelectableFlags_SpanAllColumns, ImVec2(395, 0)))
             {
                 selected_local_file = item;
                 if (item.isDir)
@@ -602,7 +600,7 @@ namespace Windows
             }
             if (ImGui::IsItemHovered())
             {
-                if (ImGui::CalcTextSize(item.name).x > 740)
+                if (ImGui::CalcTextSize(item.name).x > 335)
                 {
                     ImGui::BeginTooltip();
                     ImGui::Text("%s", item.name);
@@ -620,7 +618,7 @@ namespace Windows
                 selected_browser |= LOCAL_BROWSER;
             }
             ImGui::NextColumn();
-            ImGui::SetColumnWidth(-1, 150);
+            ImGui::SetColumnWidth(-1, 55);
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - ImGui::CalcTextSize(item.display_size).x - ImGui::GetScrollX() - ImGui::GetStyle().ItemSpacing.x);
             ImGui::Text("%s", item.display_size);
             if (search_item != multi_selected_local_files.end())
@@ -636,17 +634,16 @@ namespace Windows
         EndGroupPanel();
         ImGui::SameLine();
 
-        BeginGroupPanel(lang_strings[STR_REMOTE], ImVec2(948, 720));
-        ImGui::Dummy(ImVec2(0, 10));
+        BeginGroupPanel(lang_strings[STR_REMOTE], ImVec2(400, 400));
         posX = ImGui::GetCursorPosX();
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
         ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_DIRECTORY]);
         ImGui::SameLine();
         size = ImGui::CalcTextSize(remote_directory);
-        ImGui::SetCursorPosX(posX + 180);
+        ImGui::SetCursorPosX(posX + 70);
         ImGui::PushID("remote_directory##remote");
         pos = ImGui::GetCursorPos();
-        if (ImGui::Button(remote_directory, ImVec2(569, 0)))
+        if (ImGui::Button(remote_directory, ImVec2(255, 0)))
         {
             ime_single_field = remote_directory;
             ResetImeCallbacks();
@@ -658,7 +655,7 @@ namespace Windows
         }
         ImGui::PopID();
         ImGui::PopStyleVar();
-        if (size.x > 560 && ImGui::IsItemHovered())
+        if (size.x > 255 && ImGui::IsItemHovered())
         {
             ImGui::BeginTooltip();
             ImGui::Text("%s", remote_directory);
@@ -667,7 +664,7 @@ namespace Windows
 
         ImGui::SameLine();
         ImGui::PushID("refresh##remote");
-        if (ImGui::Button(lang_strings[STR_REFRESH], ImVec2(155, 0)))
+        if (ImGui::Button(lang_strings[STR_REFRESH], ImVec2(65, 0)))
         {
             selected_action = ACTION_REFRESH_REMOTE_FILES;
         }
@@ -682,10 +679,10 @@ namespace Windows
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
         ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_FILTER]);
         ImGui::SameLine();
-        ImGui::SetCursorPosX(posX + 180);
+        ImGui::SetCursorPosX(posX + 70);
         ImGui::PushID("remote_filter##remote");
         pos = ImGui::GetCursorPos();
-        if (ImGui::Button(remote_filter, ImVec2(569, 0)))
+        if (ImGui::Button(remote_filter, ImVec2(255, 0)))
         {
             ime_single_field = remote_filter;
             ResetImeCallbacks();
@@ -699,7 +696,7 @@ namespace Windows
         ImGui::SameLine();
 
         ImGui::PushID("search##remote");
-        if (ImGui::Button(lang_strings[STR_SEARCH], ImVec2(155, 0)))
+        if (ImGui::Button(lang_strings[STR_SEARCH], ImVec2(65, 0)))
         {
             selected_action = ACTION_APPLY_REMOTE_FILTER;
         }
@@ -711,8 +708,8 @@ namespace Windows
             ImGui::EndTooltip();
         }
 
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
-        ImGui::BeginChild(ImGui::GetID("Remote##ChildWindow"), ImVec2(919, 720));
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+        ImGui::BeginChild(ImGui::GetID("Remote##ChildWindow"), ImVec2(400, 300));
         if (set_focus_to_remote)
         {
             set_focus_to_remote = false;
@@ -725,14 +722,14 @@ namespace Windows
         {
             DirEntry item = remote_files[j];
 
-            ImGui::SetColumnWidth(-1, 740);
+            ImGui::SetColumnWidth(-1, 340);
             auto search_item = multi_selected_remote_files.find(item);
             if (search_item != multi_selected_remote_files.end())
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
             }
             ImGui::PushID(i);
-            if (ImGui::Selectable(item.name, false, ImGuiSelectableFlags_SpanAllColumns, ImVec2(919, 0)))
+            if (ImGui::Selectable(item.name, false, ImGuiSelectableFlags_SpanAllColumns, ImVec2(395, 0)))
             {
                 selected_remote_file = item;
                 if (item.isDir)
@@ -767,7 +764,7 @@ namespace Windows
             }
             if (ImGui::IsItemHovered())
             {
-                if (ImGui::CalcTextSize(item.name).x > 740)
+                if (ImGui::CalcTextSize(item.name).x > 355)
                 {
                     ImGui::BeginTooltip();
                     ImGui::Text("%s", item.name);
@@ -786,7 +783,7 @@ namespace Windows
                 selected_browser |= REMOTE_BROWSER;
             }
             ImGui::NextColumn();
-            ImGui::SetColumnWidth(-1, 150);
+            ImGui::SetColumnWidth(-1, 55);
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - ImGui::CalcTextSize(item.display_size).x - ImGui::GetScrollX() - ImGui::GetStyle().ItemSpacing.x);
             ImGui::Text("%s", item.display_size);
             if (search_item != multi_selected_remote_files.end())
@@ -866,17 +863,17 @@ namespace Windows
         bool remote_browser_selected = saved_selected_browser & REMOTE_BROWSER;
         if (local_browser_selected)
         {
-            ImGui::SetNextWindowPos(ImVec2(410, 250));
+            ImGui::SetNextWindowPos(ImVec2(140, 80));
         }
         else if (remote_browser_selected)
         {
-            ImGui::SetNextWindowPos(ImVec2(1330, 250));
+            ImGui::SetNextWindowPos(ImVec2(525, 80));
         }
-        ImGui::SetNextWindowSizeConstraints(ImVec2(230, 150), ImVec2(230, 660), NULL, NULL);
-        if (ImGui::BeginPopupModal(lang_strings[STR_ACTIONS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        ImGui::SetNextWindowSizeConstraints(ImVec2(150, 150), ImVec2(150, 400), NULL, NULL);
+        if (ImGui::BeginPopupModal(lang_strings[STR_ACTIONS], NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::PushID("Select All##settings");
-            if (ImGui::Selectable(lang_strings[STR_SELECT_ALL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_SELECT_ALL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 SetModalMode(false);
                 if (local_browser_selected)
@@ -889,7 +886,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Clear All##settings");
-            if (ImGui::Selectable(lang_strings[STR_CLEAR_ALL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_CLEAR_ALL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 SetModalMode(false);
                 if (local_browser_selected)
@@ -902,7 +899,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Cut##settings");
-            if (ImGui::Selectable(lang_strings[STR_CUT], false, getSelectableFlag(REMOTE_ACTION_CUT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_CUT], false, getSelectableFlag(REMOTE_ACTION_CUT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 selected_action = local_browser_selected ? ACTION_LOCAL_CUT : ACTION_REMOTE_CUT;
                 SetModalMode(false);
@@ -912,7 +909,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Copy##settings");
-            if (ImGui::Selectable(lang_strings[STR_COPY], false, getSelectableFlag(REMOTE_ACTION_COPY) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_COPY], false, getSelectableFlag(REMOTE_ACTION_COPY) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 selected_action = local_browser_selected ? ACTION_LOCAL_COPY : ACTION_REMOTE_COPY;
                 SetModalMode(false);
@@ -927,7 +924,7 @@ namespace Windows
                 (remote_browser_selected && remote_paste_files.size() > 0 ))
                 // && remoteclient != nullptr && (remoteclient->SupportedActions() | REMOTE_ACTION_PASTE)))
                 flags = ImGuiSelectableFlags_None;
-            if (ImGui::Selectable(lang_strings[STR_PASTE], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_PASTE], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 SetModalMode(false);
                 selected_action = local_browser_selected ? ACTION_LOCAL_PASTE : ACTION_REMOTE_PASTE;
@@ -958,7 +955,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Delete##settings");
-            if (ImGui::Selectable(lang_strings[STR_DELETE], false, getSelectableFlag(REMOTE_ACTION_DELETE) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_DELETE], false, getSelectableFlag(REMOTE_ACTION_DELETE) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 confirm_state = CONFIRM_WAIT;
                 sprintf(confirm_message, "%s", lang_strings[STR_DEL_CONFIRM_MSG]);
@@ -975,7 +972,7 @@ namespace Windows
             if ((local_browser_selected && multi_selected_local_files.size() > 1) ||
                 (remote_browser_selected && multi_selected_remote_files.size() > 1))
                 flags = ImGuiSelectableFlags_Disabled;
-            if (ImGui::Selectable(lang_strings[STR_RENAME], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_RENAME], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 if (local_browser_selected)
                     selected_action = ACTION_RENAME_LOCAL;
@@ -988,7 +985,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("setdefaultfolder##settings");
-            if (ImGui::Selectable(lang_strings[STR_SET_DEFAULT_DIRECTORY], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_SET_DEFAULT_DIRECTORY], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 if (local_browser_selected)
                     selected_action = ACTION_SET_DEFAULT_LOCAL_FOLDER;
@@ -1006,7 +1003,7 @@ namespace Windows
             {
                 flags = ImGuiSelectableFlags_Disabled;
             }
-            if (ImGui::Selectable(lang_strings[STR_NEW_FOLDER], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_NEW_FOLDER], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 if (local_browser_selected)
                     selected_action = ACTION_NEW_LOCAL_FOLDER;
@@ -1024,7 +1021,7 @@ namespace Windows
             {
                 flags = ImGuiSelectableFlags_Disabled;
             }
-            if (ImGui::Selectable(lang_strings[STR_NEW_FILE], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_NEW_FILE], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 if (local_browser_selected)
                     selected_action = ACTION_NEW_LOCAL_FILE;
@@ -1043,7 +1040,7 @@ namespace Windows
             {
                 flags = ImGuiSelectableFlags_Disabled;
             }
-            if (ImGui::Selectable(lang_strings[STR_EDIT], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_EDIT], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 if (local_browser_selected)
                 {
@@ -1060,7 +1057,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Extract##settings");
-            if (ImGui::Selectable(lang_strings[STR_EXTRACT], false, getSelectableFlag(REMOTE_ACTION_EXTRACT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_EXTRACT], false, getSelectableFlag(REMOTE_ACTION_EXTRACT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 ResetImeCallbacks();
                 sprintf(extract_zip_folder, "%s", getExtractFolder().c_str());
@@ -1083,7 +1080,7 @@ namespace Windows
             if (local_browser_selected)
             {
                 ImGui::PushID("Compress##settings");
-                if (ImGui::Selectable(lang_strings[STR_COMPRESS], false, getSelectableFlag(REMOTE_ACTION_NONE) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+                if (ImGui::Selectable(lang_strings[STR_COMPRESS], false, getSelectableFlag(REMOTE_ACTION_NONE) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {
                     std::string zipname;
                     std::string zipfolder;
@@ -1109,7 +1106,7 @@ namespace Windows
                     flags = ImGuiSelectableFlags_Disabled;
                 }
                 ImGui::PushID("Upload##settings");
-                if (ImGui::Selectable(lang_strings[STR_UPLOAD], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+                if (ImGui::Selectable(lang_strings[STR_UPLOAD], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {
                     SetModalMode(false);
                     selected_action = ACTION_UPLOAD;
@@ -1122,7 +1119,7 @@ namespace Windows
                 ImGui::Separator();
 
                 ImGui::PushID("Install##local");
-                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {
                     SetModalMode(false);
                     selected_action = ACTION_INSTALL_LOCAL_PKG;
@@ -1135,7 +1132,7 @@ namespace Windows
             if (remote_browser_selected)
             {
                 ImGui::PushID("Download##settings");
-                if (ImGui::Selectable(lang_strings[STR_DOWNLOAD], false, getSelectableFlag(REMOTE_ACTION_DOWNLOAD) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+                if (ImGui::Selectable(lang_strings[STR_DOWNLOAD], false, getSelectableFlag(REMOTE_ACTION_DOWNLOAD) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {
                     SetModalMode(false);
                     selected_action = ACTION_DOWNLOAD;
@@ -1148,7 +1145,7 @@ namespace Windows
                 ImGui::Separator();
 
                 ImGui::PushID("Install##remote");
-                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {
                     SetModalMode(false);
                     selected_action = ACTION_INSTALL_REMOTE_PKG;
@@ -1159,7 +1156,7 @@ namespace Windows
             }
 
             ImGui::PushID("InstallFromUrl##both");
-            if (ImGui::Selectable(lang_strings[STR_INSTALL_FROM_URL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_INSTALL_FROM_URL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 select_url_inprogress = true;
                 ImGui::CloseCurrentPopup();
@@ -1168,7 +1165,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Properties##settings");
-            if (ImGui::Selectable(lang_strings[STR_PROPERTIES], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_PROPERTIES], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 if (local_browser_selected)
                     selected_action = ACTION_SHOW_LOCAL_PROPERTIES;
@@ -1181,7 +1178,7 @@ namespace Windows
             ImGui::Separator();
 
             ImGui::PushID("Cancel##settings");
-            if (ImGui::Selectable(lang_strings[STR_CANCEL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(220, 0)))
+            if (ImGui::Selectable(lang_strings[STR_CANCEL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
                 SetModalMode(false);
                 ImGui::CloseCurrentPopup();
@@ -1204,8 +1201,8 @@ namespace Windows
         if (confirm_state == CONFIRM_WAIT)
         {
             ImGui::OpenPopup(lang_strings[STR_CONFIRM]);
-            ImGui::SetNextWindowPos(ImVec2(680, 350));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(640, 100), ImVec2(640, 200), NULL, NULL);
+            ImGui::SetNextWindowPos(ImVec2(200, 200));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(400, 100), ImVec2(400, 200), NULL, NULL);
             if (ImGui::BeginPopupModal(lang_strings[STR_CONFIRM], NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 620);
@@ -1236,8 +1233,8 @@ namespace Windows
         if (confirm_transfer_state == 0)
         {
             ImGui::OpenPopup(lang_strings[STR_OVERWRITE_OPTIONS]);
-            ImGui::SetNextWindowPos(ImVec2(680, 400));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(640, 100), ImVec2(640, 400), NULL, NULL);
+            ImGui::SetNextWindowPos(ImVec2(200, 200));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(400, 100), ImVec2(400, 200), NULL, NULL);
             if (ImGui::BeginPopupModal(lang_strings[STR_OVERWRITE_OPTIONS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImGui::RadioButton(lang_strings[STR_DONT_OVERWRITE], &overwrite_type, 0);
@@ -1285,8 +1282,8 @@ namespace Windows
         SetModalMode(true);
         ImGui::OpenPopup(lang_strings[STR_PROPERTIES]);
 
-        ImGui::SetNextWindowPos(ImVec2(610, 400));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(700, 80), ImVec2(700, 250), NULL, NULL);
+        ImGui::SetNextWindowPos(ImVec2(200, 200));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(400, 80), ImVec2(400, 250), NULL, NULL);
         if (ImGui::BeginPopupModal(lang_strings[STR_PROPERTIES], NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_TYPE]);

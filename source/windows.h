@@ -167,7 +167,7 @@ namespace Windows
             ImGui::GetWindowDrawList()->AddRect(
                 frameRect.Min, frameRect.Max,
                 ImColor(ImGui::GetStyleColorVec4(ImGuiCol_Button)),
-                halfFrame.x, 0, 2.0f);
+                halfFrame.x, 0, 0.1f);
 
             ImGui::PopClipRect();
         }

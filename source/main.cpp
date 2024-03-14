@@ -174,6 +174,7 @@ void InitImgui()
 	style.WindowRounding = 1.0f;
 	style.FrameRounding = 2.0f;
 	style.GrabRounding = 2.0f;
+	style.ScrollbarSize = 3.5f;
 
 	ImVec4* colors = style.Colors;
 	const ImVec4 bgColor           = ColorFromBytes(37, 37, 38);

@@ -528,7 +528,7 @@ namespace Windows
         }
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-        ImGui::BeginChild("Local##ChildWindow", ImVec2(400, 300));
+        ImGui::BeginChild("Local##ChildWindow", ImVec2(400, 320));
         ImGui::Separator();
         ImGui::Columns(2, "Local##Columns", true);
         int i = 0;
@@ -692,7 +692,7 @@ namespace Windows
         }
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-        ImGui::BeginChild(ImGui::GetID("Remote##ChildWindow"), ImVec2(400, 300));
+        ImGui::BeginChild(ImGui::GetID("Remote##ChildWindow"), ImVec2(400, 320));
         if (set_focus_to_remote)
         {
             set_focus_to_remote = false;
@@ -784,13 +784,13 @@ namespace Windows
 
     void StatusPanel()
     {
-        ImGui::Dummy(ImVec2(0, 5));
-        BeginGroupPanel(lang_strings[STR_MESSAGES], ImVec2(1905, 100));
+        // ImGui::Dummy(ImVec2(0, 5));
+        BeginGroupPanel(lang_strings[STR_MESSAGES], ImVec2(833, 50));
         ImVec2 pos = ImGui::GetCursorPos();
-        ImGui::Dummy(ImVec2(1880, 30));
+        ImGui::Dummy(ImVec2(815, 20));
         ImGui::SetCursorPos(pos);
         ImGui::SetCursorPosX(pos.x + 10);
-        ImGui::PushTextWrapPos(1870);
+        ImGui::PushTextWrapPos(825);
         if (strncmp(status_message, "4", 1) == 0 || strncmp(status_message, "3", 1) == 0)
         {
             ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s", status_message);
@@ -1192,7 +1192,7 @@ namespace Windows
                 ImGui::Text("%s", confirm_message);
                 ImGui::PopTextWrapPos();
                 ImGui::NewLine();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 220);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
                 if (ImGui::Button(lang_strings[STR_NO], ImVec2(100, 0)))
                 {
@@ -1231,9 +1231,9 @@ namespace Windows
                 ImGui::PopTextWrapPos();
                 ImGui::Separator();
 
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 170);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-                if (ImGui::Button(lang_strings[STR_CANCEL], ImVec2(150, 0)))
+                if (ImGui::Button(lang_strings[STR_CANCEL], ImVec2(100, 0)))
                 {
                     confirm_transfer_state = 2;
                     dont_prompt_overwrite_cb = dont_prompt_overwrite;
@@ -1245,7 +1245,7 @@ namespace Windows
                     ImGui::SetItemDefaultFocus();
                 }
                 ImGui::SameLine();
-                if (ImGui::Button(lang_strings[STR_CONTINUE], ImVec2(150, 0)))
+                if (ImGui::Button(lang_strings[STR_CONTINUE], ImVec2(100, 0)))
                 {
                     confirm_transfer_state = 1;
                     dont_prompt_overwrite = dont_prompt_overwrite_cb;
@@ -1267,7 +1267,7 @@ namespace Windows
 
         ImGui::SetNextWindowPos(ImVec2(200, 200));
         ImGui::SetNextWindowSizeConstraints(ImVec2(400, 80), ImVec2(400, 250), NULL, NULL);
-        if (ImGui::BeginPopupModal(lang_strings[STR_PROPERTIES], NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        if (ImGui::BeginPopupModal(lang_strings[STR_PROPERTIES], NULL, ImGuiWindowFlags_AlwaysAutoResize| ImGuiWindowFlags_NoScrollbar))
         {
             ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_TYPE]);
             ImGui::SameLine();
@@ -1294,7 +1294,7 @@ namespace Windows
                         item.modified.hours, item.modified.minutes, item.modified.seconds);
             ImGui::Separator();
 
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 300);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 150);
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
             if (ImGui::Button(lang_strings[STR_CLOSE], ImVec2(100, 0)))
             {
@@ -1319,8 +1319,8 @@ namespace Windows
             SetModalMode(true);
             ImGui::OpenPopup(lang_strings[STR_PROGRESS]);
 
-            ImGui::SetNextWindowPos(ImVec2(680, 350));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(640, 80), ImVec2(640, 400), NULL, NULL);
+            ImGui::SetNextWindowPos(ImVec2(175, 100));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(500, 80), ImVec2(500, 400), NULL, NULL);
             if (ImGui::BeginPopupModal(lang_strings[STR_PROGRESS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImVec2 cur_pos = ImGui::GetCursorPos();
@@ -1461,14 +1461,14 @@ namespace Windows
             SetModalMode(true);
             ImGui::OpenPopup(lang_strings[STR_EDITOR]);
 
-            ImGui::SetNextWindowPos(ImVec2(320, 115));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(1280, 80), ImVec2(1280, 850), NULL, NULL);
-            if (ImGui::BeginPopupModal(lang_strings[STR_EDITOR], NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            ImGui::SetNextWindowPos(ImVec2(20, 10));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(800, 80), ImVec2(800, 490), NULL, NULL);
+            if (ImGui::BeginPopupModal(lang_strings[STR_EDITOR], NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
             {
                 ImVec2 cur_pos = ImGui::GetCursorPos();
                 char id[128];
                 sprintf(id, "%s##editor", lang_strings[STR_CLOSE]);
-                if (ImGui::Button(id, ImVec2(635, 0)))
+                if (ImGui::Button(id, ImVec2(388, 0)))
                 {
                     editor_inprogress = false;
                     SetModalMode(false);
@@ -1476,7 +1476,7 @@ namespace Windows
                 }
                 ImGui::SameLine();
                 sprintf(id, "%s##editor", lang_strings[STR_SAVE]);
-                if (ImGui::Button(id, ImVec2(635, 0)))
+                if (ImGui::Button(id, ImVec2(388, 0)))
                 {
                     bool local_browser_selected = saved_selected_browser & LOCAL_BROWSER;
                     bool remote_browser_selected = saved_selected_browser & REMOTE_BROWSER;
@@ -1502,7 +1502,7 @@ namespace Windows
                 }
 
                 ImGui::Separator();
-                ImGui::BeginChild("Editor##ChildWindow", ImVec2(1275, 680));
+                ImGui::BeginChild("Editor##ChildWindow", ImVec2(785, 390));
                 int j = 0;
                 static int insert_item = -1;
                 for (std::vector<std::string>::iterator it = edit_buffer.begin(); it != edit_buffer.end(); it++)
@@ -1535,7 +1535,7 @@ namespace Windows
                     }
                     if (ImGui::IsItemHovered())
                     {
-                        if (ImGui::CalcTextSize(it->c_str()).x > 1275)
+                        if (ImGui::CalcTextSize(it->c_str()).x > 775)
                         {
                             ImGui::BeginTooltip();
                             ImGui::Text("%s", it->c_str());

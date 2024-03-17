@@ -1,7 +1,7 @@
 #ifndef ACTIONS_H
 #define ACTIONS_H
 
-#include <pthread.h>
+#include <sys/thread.h>
 #include "common.h"
 
 #define CONFIRM_NONE -1
@@ -66,8 +66,8 @@ enum OverWriteType
     OVERWRITE_ALL
 };
 
-// static pthread_t bk_activity_thid;
-// static pthread_t ftp_keep_alive_thid;
+static sys_ppu_thread_t bk_activity_thid;
+static sys_ppu_thread_t ftp_keep_alive_thid;
 
 namespace Actions
 {
@@ -82,7 +82,7 @@ namespace Actions
     void CreateNewRemoteFolder(char *new_folder);
     void RenameLocalFolder(const char *old_path, const char *new_path);
     void RenameRemoteFolder(const char *old_path, const char *new_path);
-    void *DeleteSelectedLocalFilesThread(void *argp);
+    void DeleteSelectedLocalFilesThread(void *argp);
     void DeleteSelectedLocalFiles();
     void *DeleteSelectedRemotesFilesThread(void *argp);
     void DeleteSelectedRemotesFiles();
@@ -107,9 +107,9 @@ namespace Actions
     void ExtractRemoteZips();
     void *MakeZipThread(void *argp);
     void MakeLocalZip();
-    void *MoveLocalFilesThread(void *argp);
+    void MoveLocalFilesThread(void *argp);
     void MoveLocalFiles();
-    void *CopyLocalFilesThread(void *argp);
+    void CopyLocalFilesThread(void *argp);
     void CopyLocalFiles();
     void *MoveRemoteFilesThread(void *argp);
     void MoveRemoteFiles();

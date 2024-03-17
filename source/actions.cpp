@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
-//#include <pthread.h>
+#include <sys/thread.h>
 //#include <lexbor/html/parser.h>
 //#include <lexbor/dom/interfaces/element.h>
 #include "common.h"
@@ -252,7 +252,7 @@ namespace Actions
         */
     }
 
-    void *DeleteSelectedLocalFilesThread(void *argp)
+    void DeleteSelectedLocalFilesThread(void *argp)
     {
         std::vector<DirEntry> files;
         if (multi_selected_local_files.size() > 0)
@@ -267,20 +267,18 @@ namespace Actions
         activity_inprogess = false;
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void DeleteSelectedLocalFiles()
     {
-        /*
-        int ret = pthread_create(&bk_activity_thid, NULL, DeleteSelectedLocalFilesThread, NULL);
+        int ret = sysThreadCreate(&bk_activity_thid, DeleteSelectedLocalFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "DeleteSelectedLocalFiles");
         if (ret != 0)
         {
             activity_inprogess = false;
             Windows::SetModalMode(false);
             selected_action = ACTION_REFRESH_LOCAL_FILES;
         }
-        */
     }
 
     void *DeleteSelectedRemotesFilesThread(void *argp)
@@ -1459,7 +1457,7 @@ namespace Actions
         return 1;
     }
 
-    void *MoveLocalFilesThread(void *argp)
+    void MoveLocalFilesThread(void *argp)
     {
         file_transfering = true;
         for (std::vector<DirEntry>::iterator it = local_paste_files.begin(); it != local_paste_files.end(); ++it)
@@ -1492,14 +1490,13 @@ namespace Actions
         local_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void MoveLocalFiles()
     {
-        /*
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, MoveLocalFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, MoveLocalFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "MoveLocalFiles");
         if (res != 0)
         {
             file_transfering = false;
@@ -1507,10 +1504,9 @@ namespace Actions
             local_paste_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
-    void *CopyLocalFilesThread(void *argp)
+    void CopyLocalFilesThread(void *argp)
     {
         file_transfering = true;
         for (std::vector<DirEntry>::iterator it = local_paste_files.begin(); it != local_paste_files.end(); ++it)
@@ -1542,14 +1538,13 @@ namespace Actions
         local_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void CopyLocalFiles()
     {
-        /*
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, CopyLocalFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, CopyLocalFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "CopyLocalFiles");
         if (res != 0)
         {
             file_transfering = false;
@@ -1557,7 +1552,6 @@ namespace Actions
             local_paste_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     int CopyOrMoveRemoteFile(const std::string &src, const std::string &dest, bool isCopy)

@@ -306,15 +306,15 @@ namespace FS
                 gmt.second = tm.tm_sec;
 
                 convertUtcToLocalTime(&gmt, &lt);
-
-                entry.modified.day = lt.day;
-                entry.modified.month = lt.month;
-                entry.modified.year = lt.year;
-                entry.modified.hours = lt.hour;
-                entry.modified.minutes = lt.minute;
-                entry.modified.seconds = lt.second;
-                entry.file_size = file_stat.st_size;
                 */
+
+                entry.modified.day = tm.tm_mday;
+                entry.modified.month = tm.tm_mon + 1;
+                entry.modified.year = tm.tm_year + 1900;
+                entry.modified.hours = tm.tm_hour;
+                entry.modified.minutes = tm.tm_min;
+                entry.modified.seconds = tm.tm_sec;
+                entry.file_size = file_stat.st_size;
                
                 if (dirent->d_type & DT_DIR)
                 {

@@ -31,7 +31,7 @@ SOURCES		:=	source source/imgui source/clients
 DATA		:=	data
 SHADERS		:=	shaders
 INCLUDES	:=	source source/imgui source/clients
-
+PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
@@ -134,7 +134,13 @@ run:
 	ps3load $(OUTPUT).self
 
 #---------------------------------------------------------------------------------
-pkg:	$(BUILD) $(OUTPUT).pkg
+prep:
+	@echo Prep...
+	@mkdir -p $(PKG_DIR)
+	@cp -R $(DATA)/* $(PKG_DIR)
+
+#---------------------------------------------------------------------------------
+pkg:	$(BUILD) prep $(OUTPUT).pkg
 
 #---------------------------------------------------------------------------------
 

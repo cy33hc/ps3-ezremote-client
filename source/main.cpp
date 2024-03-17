@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <unistd.h>
 #include <math.h>
+#include <sysutil/sysutil.h>
+#include <sys/process.h>
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_tiny3d.h"
@@ -15,11 +17,6 @@
 #include "gui.h"
 #include "lang.h"
 #include "util.h"
-
-#include "Roboto_ttf_bin.h"
-#include "Roboto_ext_ttf_bin.h"
-#include "fa_solid_900_tff_bin.h"
-#include "OpenFontIcons_ttf_bin.h"
 
 ImVec4 ColorFromBytes(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
 {
@@ -116,51 +113,52 @@ void InitImgui()
 
 	std::string lang = std::string(language);
 	int32_t lang_idx;
+	sysUtilGetSystemParamInt(SYSUTIL_SYSTEMPARAM_ID_LANG, &lang_idx);
 
 	lang = Util::Trim(lang, " ");
-	if (lang.compare("Korean") == 0)
+	if (lang.compare("Korean") == 0 || lang_idx == SYSUTIL_LANG_KOREAN)
 	{
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
 	}
-	else if (lang.compare("Simplified Chinese") == 0)
+	else if (lang.compare("Simplified Chinese") == 0 || lang_idx == SYSUTIL_LANG_CHINESE_S)
 	{
 		ImFontConfig config;
 		config.OversampleH = 1;
 		config.OversampleV = 1;
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, &config, io.Fonts->GetGlyphRangesChineseFull());
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, &config, io.Fonts->GetGlyphRangesChineseFull());
 	}
-	else if (lang.compare("Traditional Chinese") == 0)
+	else if (lang.compare("Traditional Chinese") == 0 || lang_idx == SYSUTIL_LANG_CHINESE_T)
 	{
 		ImFontConfig config;
 		config.OversampleH = 1;
 		config.OversampleV = 1;
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, &config, io.Fonts->GetGlyphRangesChineseFull());
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, &config, io.Fonts->GetGlyphRangesChineseFull());
 	}
-	else if (lang.compare("Japanese") == 0 || lang.compare("Ryukyuan") == 0)
+	else if (lang.compare("Japanese") == 0 || lang.compare("Ryukyuan") == 0 || lang_idx == SYSUTIL_LANG_JAPANESE)
 	{
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	}
 	else if (lang.compare("Thai") == 0)
 	{
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, NULL, io.Fonts->GetGlyphRangesThai());
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesThai());
 	}
 	else if (lang.compare("Vietnamese") == 0)
 	{
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, NULL, io.Fonts->GetGlyphRangesVietnamese());
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesVietnamese());
 	}
 	else if (lang.compare("Arabic") == 0)
 	{
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ext_ttf_bin, Roboto_ext_ttf_bin_size, 18.0f, NULL, arabic);
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, arabic);
 	}
 	else
 	{
-		io.Fonts->AddFontFromMemoryTTF(Roboto_ttf_bin, Roboto_ttf_bin_size, 18.0f, NULL, ranges);
+		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto.ttf", 18.0f, NULL, ranges);
 	}
 	ImFontConfig config;
 	config.MergeMode = true;
 	config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
-	io.Fonts->AddFontFromMemoryTTF(fa_solid_900_tff_bin, fa_solid_900_tff_bin_size, 18.0f, &config, fa_icons);
-	io.Fonts->AddFontFromMemoryTTF(OpenFontIcons_ttf_bin, OpenFontIcons_ttf_bin_size, 18.0f, &config, of_icons);
+	io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/fa_solid_900.tff", 18.0f, &config, fa_icons);
+	io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/OpenFontIcons.ttf", 18.0f, &config, of_icons);
 	io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
 	io.Fonts->Build();
 	io.FontGlobalScale = 0.7f;
@@ -258,4 +256,6 @@ int main()
 	// Cleanup
 	ImGui_ImplTiny3D_Shutdown();
 	ImGui::DestroyContext();
+
+	sysProcessExitSpawn2("/dev_hdd0/game/PSL145310/RELOAD.SELF", NULL, NULL, NULL, 0, 1001, SYS_PROCESS_SPAWN_STACK_SIZE_1M);
 }

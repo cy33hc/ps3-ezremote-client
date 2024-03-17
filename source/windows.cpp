@@ -97,10 +97,6 @@ int confirm_state = CONFIRM_NONE;
 char confirm_message[256];
 ACTIONS action_to_take = ACTION_NONE;
 
-bool prev_down[21] = {false, false, false, false, false, false, false, false, false, false,
-                      false, false, false, false, false, false, false, false, false, false, false};
-bool cur_down[21] = {false, false, false, false, false, false, false, false, false, false,
-                     false, false, false, false, false, false, false, false, false, false, false};
 namespace Windows
 {
 
@@ -126,15 +122,7 @@ namespace Windows
 
     void HandleWindowInput()
     {
-        ImGuiIO &io = ImGui::GetIO();
-        (void)io;
-        /* SDL_GameController *game_controller = SDL_GameControllerOpen(0);
-        cur_down[SDL_CONTROLLER_BUTTON_X] = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_X);
-        cur_down[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-        cur_down[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-        cur_down[SDL_CONTROLLER_BUTTON_BACK] = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_BACK);
-
-        if (prev_down[SDL_CONTROLLER_BUTTON_X] && !cur_down[SDL_CONTROLLER_BUTTON_X] && !paused)
+        if (ImGui::IsKeyPressed(ImGuiKey_Keypad0, false) && !paused)
         {
             if (selected_browser & LOCAL_BROWSER && strcmp(selected_local_file.name, "..") != 0)
             {
@@ -162,25 +150,20 @@ namespace Windows
             }
         }
 
-        if (prev_down[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] && !cur_down[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] && !paused)
+        if (ImGui::IsKeyPressed(ImGuiKey_GamepadR1, false) && !paused)
         {
             set_focus_to_remote = true;
         }
 
-        if (prev_down[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] && !cur_down[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] && !paused)
+        if (ImGui::IsKeyPressed(ImGuiKey_GamepadL1, false) && !paused)
         {
             set_focus_to_local = true;
         }
 
-        if (prev_down[SDL_CONTROLLER_BUTTON_BACK] && !cur_down[SDL_CONTROLLER_BUTTON_BACK] && !paused)
+        if (ImGui::IsKeyPressed(ImGuiKey_GamepadStart, false) && !paused)
         {
             selected_action = ACTION_DISCONNECT_AND_EXIT;
         }
-
-        prev_down[SDL_CONTROLLER_BUTTON_X] = cur_down[SDL_CONTROLLER_BUTTON_X];
-        prev_down[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = cur_down[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER];
-        prev_down[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = cur_down[SDL_CONTROLLER_BUTTON_LEFTSHOULDER];
-        prev_down[SDL_CONTROLLER_BUTTON_BACK] = cur_down[SDL_CONTROLLER_BUTTON_BACK]; */
     }
 
     void SetModalMode(bool modal)
@@ -2174,7 +2157,8 @@ namespace Windows
             /* Actions::Disconnect();
             HttpServer::Stop();
             GDriveClient::StopRefreshToken();
-            done = true; */
+            */
+            done = true;
             break;
         case ACTION_INSTALL_REMOTE_PKG:
             sprintf(status_message, "%s", "");

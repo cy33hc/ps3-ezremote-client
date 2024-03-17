@@ -140,7 +140,7 @@ void ImGui_ImplTiny3D_UpdateGamepads()
 
 				MAP_BUTTON(ImGuiKey_GamepadStart, paddata.BTN_START);
 				MAP_BUTTON(ImGuiKey_GamepadBack, paddata.BTN_SELECT);
-				MAP_BUTTON(ImGuiKey_GamepadFaceLeft, paddata.BTN_SQUARE);
+				MAP_BUTTON(ImGuiKey_Keypad0, paddata.BTN_SQUARE);
 				MAP_BUTTON(ImGuiKey_GamepadFaceRight, paddata.BTN_CIRCLE);
 				MAP_BUTTON(ImGuiKey_GamepadFaceUp, paddata.BTN_TRIANGLE);
 				MAP_BUTTON(ImGuiKey_GamepadFaceDown, paddata.BTN_CROSS);

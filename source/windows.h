@@ -7,7 +7,6 @@
 #include "imgui_internal.h"
 #include "common.h"
 #include "actions.h"
-#include "SDL2/SDL.h"
 
 #define LOCAL_BROWSER 1
 #define REMOTE_BROWSER 2

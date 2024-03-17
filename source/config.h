@@ -10,6 +10,10 @@
 
 #include "clients/remote_client.h"
 
+#define APP_FOLDER "/dev_hdd0/game/RMTC00001/USRDIR"
+#define APP_FONTS_DIR APP_FOLDER "/fonts"
+#define APP_LANGS_DIR APP_FOLDER "/langs"
+
 #define APP_ID "ezremote-client"
 #define DATA_PATH "/dev_hdd0/tmp/" APP_ID
 #define CONFIG_INI_FILE DATA_PATH "/config.ini"

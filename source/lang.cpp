@@ -1,4 +1,5 @@
 #include <string>
+#include <sysutil/sysutil.h>
 #include "string.h"
 #include "stdio.h"
 #include "config.h"
@@ -193,70 +194,49 @@ namespace Lang
 		else
 		{
 			switch (lang_idx)
-			{/*/
-			case ORBIS_SYSTEM_PARAM_LANG_ITALIAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/Italiano.ini");
+			{
+			case SYSUTIL_LANG_ITALIAN:
+				sprintf(langFile, "%s/Italiano.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_SPANISH:
-			case ORBIS_SYSTEM_PARAM_LANG_SPANISH_LA:
-				sprintf(langFile, "%s", "/app0/assets/langs/Spanish.ini");
+			case SYSUTIL_LANG_SPANISH:
+				sprintf(langFile, "%s/Spanish.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_GERMAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/German.ini");
+			case SYSUTIL_LANG_GERMAN:
+				sprintf(langFile, "%s/German.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_PORTUGUESE_PT:
-			case ORBIS_SYSTEM_PARAM_LANG_PORTUGUESE_BR:
-				sprintf(langFile, "%s", "/app0/assets/langs/Portuguese_BR.ini");
+			case SYSUTIL_LANG_PORTUGUESE_BR:
+			case SYSUTIL_LANG_PORTUGUESE_PT:
+				sprintf(langFile, "%s/Portuguese_BR.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_RUSSIAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/Russian.ini");
+			case SYSUTIL_LANG_RUSSIAN:
+				sprintf(langFile, "%s/Russian.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_DUTCH:
-				sprintf(langFile, "%s", "/app0/assets/langs/Dutch.ini");
+			case SYSUTIL_LANG_DUTCH:
+				sprintf(langFile, "%s/Dutch.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_FRENCH:
-			case ORBIS_SYSTEM_PARAM_LANG_FRENCH_CA:
-				sprintf(langFile, "%s", "/app0/assets/langs/French.ini");
+			case SYSUTIL_LANG_FRENCH:
+				sprintf(langFile, "%s/French.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_POLISH:
-				sprintf(langFile, "%s", "/app0/assets/langs/Polish.ini");
+			case SYSUTIL_LANG_POLISH:
+				sprintf(langFile, "%s/Polish.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_JAPANESE:
-				sprintf(langFile, "%s", "/app0/assets/langs/Japanese.ini");
+			case SYSUTIL_LANG_JAPANESE:
+				sprintf(langFile, "%s/Japanese.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_KOREAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/Korean.ini");
+			case SYSUTIL_LANG_KOREAN:
+				sprintf(langFile, "%s/Korean.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_CHINESE_S:
-				sprintf(langFile, "%s", "/app0/assets/langs/Simplified Chinese.ini");
+			case SYSUTIL_LANG_CHINESE_S:
+				sprintf(langFile, "%s/Simplified Chinese.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_CHINESE_T:
-				sprintf(langFile, "%s", "/app0/assets/langs/Traditional Chinese.ini");
+			case SYSUTIL_LANG_CHINESE_T:
+				sprintf(langFile, "%s/Traditional Chinese.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_INDONESIAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/Indonesian.ini");
+			case SYSUTIL_LANG_TURKISH:
+				sprintf(langFile, "%s/Turkish.ini", APP_LANGS_DIR);
 				break;
-			case ORBIS_SYSTEM_PARAM_LANG_HUNGARIAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/Hungarian.ini");
-				break;
-			case ORBIS_SYSTEM_PARAM_LANG_GREEK:
-				sprintf(langFile, "%s", "/app0/assets/langs/Greek.ini");
-				break;
-			case ORBIS_SYSTEM_PARAM_LANG_VIETNAMESE:
-				sprintf(langFile, "%s", "/app0/assets/langs/Vietnamese.ini");
-				break;
-			case ORBIS_SYSTEM_PARAM_LANG_TURKISH:
-				sprintf(langFile, "%s", "/app0/assets/langs/Turkish.ini");
-				break;
-			case ORBIS_SYSTEM_PARAM_LANG_ARABIC:
-				sprintf(langFile, "%s", "/app0/assets/langs/Arabic.ini");
-				break;
-			case ORBIS_SYSTEM_PARAM_LANG_ROMANIAN:
-				sprintf(langFile, "%s", "/app0/assets/langs/Romanian.ini");
-				break;
-			*/
 			default:
-				sprintf(langFile, "%s/langs/English.ini", DATA_PATH);
+				sprintf(langFile, "%s/English.ini", APP_LANGS_DIR);
 				break;
 			}
 		}
@@ -288,7 +268,7 @@ namespace Lang
 
 		char buf[12];
 		int num;
-		//sscanf(last_site, "%[^ ] %d", buf, &num);
-		//sprintf(display_site, "%s %d", lang_strings[STR_SITE], num);
+		sscanf(last_site, "%[^ ] %d", buf, &num);
+		sprintf(display_site, "%s %d", lang_strings[STR_SITE], num);
 	}
 }

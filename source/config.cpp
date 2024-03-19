@@ -3,7 +3,6 @@
 #include <vector>
 #include <regex>
 #include <stdlib.h>
-// #include "server/http_server.h"
 #include "config.h"
 #include "fs.h"
 #include "lang.h"
@@ -43,7 +42,7 @@ char temp_folder[256];
 unsigned char cipher_key[32] = {'s', '5', 'v', '8', 'y', '/', 'B', '?', 'E', '(', 'H', '+', 'M', 'b', 'Q', 'e', 'T', 'h', 'W', 'm', 'Z', 'q', '4', 't', '7', 'w', '9', 'z', '$', 'C', '&', 'F'};
 unsigned char cipher_iv[16] = {'Y', 'p', '3', 's', '6', 'v', '9', 'y', '$', 'B', '&', 'E', ')', 'H', '@', 'M'};
 
-// RemoteClient *remoteclient;
+RemoteClient *remoteclient;
 
 namespace CONFIG
 {
@@ -78,6 +77,7 @@ namespace CONFIG
 
         return 1;
     }
+    */
 
     void SetClientType(RemoteSettings *setting)
     {
@@ -115,6 +115,7 @@ namespace CONFIG
         }
     }
 
+    /*
     void LoadCipherKeys()
     {
         // Get the key and iv for encryption. Inject the account_id/MAC address as part of the key and iv.
@@ -281,8 +282,8 @@ namespace CONFIG
             WriteString(sites[i].c_str(), CONFIG_REMOTE_SERVER_USER, setting.username);
 
             char tmp_password[128];
-            sprintf(tmp_password, "%s", ReadString(sites[i].c_str(), CONFIG_REMOTE_SERVER_PASSWORD, ""));
-            std::string encrypted_password;
+            sprintf(setting.password, "%s", ReadString(sites[i].c_str(), CONFIG_REMOTE_SERVER_PASSWORD, ""));
+            //std::string encrypted_password = tmp_password;
             /* if (strlen(tmp_password) > 0)
             {
                 std::string decrypted_password;
@@ -293,7 +294,7 @@ namespace CONFIG
                     sprintf(setting.password, "%s", decrypted_password.c_str());
                 Encrypt(setting.password, encrypted_password);
             } */
-            WriteString(sites[i].c_str(), CONFIG_REMOTE_SERVER_PASSWORD, encrypted_password.c_str());
+            WriteString(sites[i].c_str(), CONFIG_REMOTE_SERVER_PASSWORD, setting.password);
 
             setting.enable_rpi = ReadBool(sites[i].c_str(), CONFIG_ENABLE_RPI, true);
             WriteBool(sites[i].c_str(), CONFIG_ENABLE_RPI, setting.enable_rpi);
@@ -338,7 +339,7 @@ namespace CONFIG
             } */
             WriteString(sites[i].c_str(), CONFIG_GOOGLE_REFRESH_TOKEN, encrypted_refresh_token.c_str());
 
-            //SetClientType(&setting);
+            SetClientType(&setting);
             site_settings.insert(std::make_pair(sites[i], setting));
         }
 
@@ -362,20 +363,19 @@ namespace CONFIG
     {
         OpenIniFile(CONFIG_INI_FILE);
 
-        /*
         std::string encrypted_text;
-        if (strlen(remote_settings->password) > 0)
-            Encrypt(remote_settings->password, encrypted_text);
-        else
-            encrypted_text = std::string(remote_settings->password);
+        //if (strlen(remote_settings->password) > 0)
+        //    Encrypt(remote_settings->password, encrypted_text);
+        //else
+            encrypted_text = remote_settings->password;
         WriteString(last_site, CONFIG_REMOTE_SERVER_URL, remote_settings->server);
         WriteString(last_site, CONFIG_REMOTE_SERVER_USER, remote_settings->username);
-        WriteString(last_site, CONFIG_REMOTE_SERVER_PASSWORD, encrypted_text.c_str());
+        WriteString(last_site, CONFIG_REMOTE_SERVER_PASSWORD, remote_settings->password);
         WriteBool(last_site, CONFIG_ENABLE_RPI, remote_settings->enable_rpi);
         WriteString(last_site, CONFIG_REMOTE_HTTP_SERVER_TYPE, remote_settings->http_server_type);
         WriteString(last_site, CONFIG_REMOTE_DEFAULT_DIRECTORY, remote_settings->default_directory);
         WriteString(CONFIG_GLOBAL, CONFIG_LAST_SITE, last_site);
-        
+        /*
         std::string encrypted_token;
         if (strlen(remote_settings->gg_account.access_token) > 0)
             Encrypt(remote_settings->gg_account.access_token, encrypted_token);

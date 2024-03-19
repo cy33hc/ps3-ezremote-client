@@ -1,8 +1,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/thread.h>
+#include <sys/systime.h>
 //#include <lexbor/html/parser.h>
 //#include <lexbor/dom/interfaces/element.h>
+#include "clients/remote_client.h"
+#include "clients/ftpclient.h"
+#include "clients/smbclient.h"
 #include "common.h"
 #include "fs.h"
 #include "config.h"
@@ -54,7 +58,6 @@ namespace Actions
 
     void RefreshRemoteFiles(bool apply_filter)
     {
-        /*
         if (!remoteclient->Ping())
         {
             remoteclient->Quit();
@@ -85,7 +88,6 @@ namespace Actions
             remote_files = remoteclient->ListDir(remote_directory);
         }
         DirEntry::Sort(remote_files);
-        */
     }
 
     void HandleChangeLocalDirectory(const DirEntry entry)
@@ -281,9 +283,8 @@ namespace Actions
         }
     }
 
-    void *DeleteSelectedRemotesFilesThread(void *argp)
+    void DeleteSelectedRemotesFilesThread(void *argp)
     {
-        /*
         if (remoteclient->Ping())
         {
             std::vector<DirEntry> files;
@@ -314,20 +315,17 @@ namespace Actions
         }
         activity_inprogess = false;
         Windows::SetModalMode(false);
-        */
-        return NULL;
+        sysThreadExit(0);
     }
 
     void DeleteSelectedRemotesFiles()
     {
-        /*
-        int res = pthread_create(&bk_activity_thid, NULL, DeleteSelectedRemotesFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, DeleteSelectedRemotesFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "DeleteSelectedRemoteFiles");
         if (res != 0)
         {
             activity_inprogess = false;
             Windows::SetModalMode(false);
         }
-        */
     }
 
     int UploadFile(const char *src, const char *dest)
@@ -443,7 +441,7 @@ namespace Actions
         return 1;
     }
 
-    void *UploadFilesThread(void *argp)
+    void UploadFilesThread(void *argp)
     {
         file_transfering = true;
         std::vector<DirEntry> files;
@@ -470,14 +468,13 @@ namespace Actions
         multi_selected_local_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_REMOTE_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void UploadFiles()
     {
-        /*
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, UploadFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, UploadFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "UploadFiles");
         if (res != 0)
         {
             activity_inprogess = false;
@@ -486,7 +483,6 @@ namespace Actions
             Windows::SetModalMode(false);
             selected_action = ACTION_REFRESH_REMOTE_FILES;
         }
-        */
     }
 
     int DownloadFile(const char *src, const char *dest)
@@ -599,7 +595,7 @@ namespace Actions
         return 1;
     }
 
-    void *DownloadFilesThread(void *argp)
+    void DownloadFilesThread(void *argp)
     {
         file_transfering = true;
         std::vector<DirEntry> files;
@@ -626,14 +622,13 @@ namespace Actions
         multi_selected_remote_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void DownloadFiles()
     {
-        /*
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, DownloadFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, DownloadFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "DownloadFiles");
         if (res != 0)
         {
             file_transfering = false;
@@ -642,7 +637,6 @@ namespace Actions
             Windows::SetModalMode(false);
             selected_action = ACTION_REFRESH_LOCAL_FILES;
         }
-        */
     }
 
     void *InstallRemotePkgsThread(void *argp)
@@ -1221,9 +1215,9 @@ namespace Actions
 
     void Connect()
     {
-        /*
         CONFIG::SaveConfig();
 
+        /*
         if (strncmp(remote_settings->server, GOOGLE_DRIVE_BASE_URL, strlen(GOOGLE_DRIVE_BASE_URL)) == 0)
         {
             remoteclient = new GDriveClient();
@@ -1246,7 +1240,8 @@ namespace Actions
         {
             remoteclient = new WebDAVClient();
         }
-        else if (strncmp(remote_settings->server, "smb://", 6) == 0)
+        */
+        if (strncmp(remote_settings->server, "smb://", 6) == 0)
         {
             remoteclient = new SmbClient();
         }
@@ -1258,6 +1253,7 @@ namespace Actions
             client->SetCallbackXferFunction(FtpCallback);
             remoteclient = client;
         }
+        /*
         else if (strncmp(remote_settings->server, "sftp://", 7) == 0)
         {
             remoteclient = new SFTPClient();
@@ -1266,6 +1262,7 @@ namespace Actions
         {
             remoteclient = new NfsClient();
         }
+        */
         else
         {
             sprintf(status_message, "%s", lang_strings[STR_PROTOCOL_NOT_SUPPORTED]);
@@ -1277,10 +1274,10 @@ namespace Actions
         {
             RefreshRemoteFiles(false);
 
-            if (remoteclient->clientType() == CLIENT_TYPE_FTP)
+            /* if (remoteclient->clientType() == CLIENT_TYPE_FTP)
             {
                 int res = pthread_create(&ftp_keep_alive_thid, NULL, KeepAliveThread, NULL);
-            }
+            } */
         }
         else
         {
@@ -1293,12 +1290,10 @@ namespace Actions
             }
         }
         selected_action = ACTION_NONE;
-        */
     }
 
     void Disconnect()
     {
-        /*
         if (remoteclient != nullptr)
         {
             if (remoteclient->IsConnected())
@@ -1309,7 +1304,6 @@ namespace Actions
             delete remoteclient;
             remoteclient = nullptr;
         }
-        */
     }
 
     void SelectAllLocalFiles()
@@ -1556,7 +1550,6 @@ namespace Actions
 
     int CopyOrMoveRemoteFile(const std::string &src, const std::string &dest, bool isCopy)
     {
-        /*
         int ret;
         if (overwrite_type == OVERWRITE_PROMPT && remoteclient->FileExists(dest))
         {
@@ -1566,7 +1559,8 @@ namespace Actions
             activity_inprogess = false;
             while (confirm_state == CONFIRM_WAIT)
             {
-                sceKernelUsleep(100000);
+                sysUsleep(100000);
+                
             }
             activity_inprogess = true;
             selected_action = action_to_take;
@@ -1587,11 +1581,10 @@ namespace Actions
             else
                 return remoteclient->Move(src, dest);
         }
-        */
         return 1;
     }
 
-    void *MoveRemoteFilesThread(void *argp)
+    void MoveRemoteFilesThread(void *argp)
     {
         file_transfering = false;
         for (std::vector<DirEntry>::iterator it = remote_paste_files.begin(); it != remote_paste_files.end(); ++it)
@@ -1623,14 +1616,13 @@ namespace Actions
         remote_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_REMOTE_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void MoveRemoteFiles()
     {
-        /*
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, MoveRemoteFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, MoveRemoteFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "MoveRemoteFiles");
         if (res != 0)
         {
             file_transfering = false;
@@ -1638,12 +1630,10 @@ namespace Actions
             remote_paste_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     int CopyRemotePath(const DirEntry &src, const char *dest)
     {
-        /*
         if (stop_activity)
             return 1;
 
@@ -1706,11 +1696,10 @@ namespace Actions
             }
             free(new_path);
         }
-        */
         return 1;
     }
 
-    void *CopyRemoteFilesThread(void *argp)
+    void CopyRemoteFilesThread(void *argp)
     {
         file_transfering = false;
         for (std::vector<DirEntry>::iterator it = remote_paste_files.begin(); it != remote_paste_files.end(); ++it)
@@ -1746,14 +1735,13 @@ namespace Actions
         remote_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_REMOTE_FILES;
-        return NULL;
+        sysThreadExit(0);
     }
 
     void CopyRemoteFiles()
     {
-        /*
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, CopyRemoteFilesThread, NULL);
+        int res = sysThreadCreate(&bk_activity_thid, CopyRemoteFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "CopyRemoteFiles");
         if (res != 0)
         {
             file_transfering = false;
@@ -1761,7 +1749,6 @@ namespace Actions
             remote_paste_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     /*
@@ -1807,7 +1794,6 @@ namespace Actions
 
     void CreateRemoteFile(char *filename)
     {
-        /*
         std::string new_file = FS::GetPath(remote_directory, filename);
         std::string temp_file = new_file;
         int i = 1;
@@ -1815,20 +1801,19 @@ namespace Actions
         {
             if (!remoteclient->FileExists(temp_file))
                 break;
-            temp_file = new_file + "." + std::to_string(i);
+            temp_file = new_file + "." + Util::ToString(i);
             i++;
         }
 
-        OrbisTick tick;
-        sceRtcGetCurrentTick(&tick);
-        std::string local_tmp = std::string(DATA_PATH) + "/" + std::to_string(tick.mytick);
+        u64 sec, usec;
+        sysGetCurrentTime(&sec, &usec);
+        std::string local_tmp = std::string(DATA_PATH) + "/" + Util::ToString(sec);
         FILE *f = FS::Create(local_tmp);
         FS::Close(f);
         remoteclient->Put(local_tmp, temp_file);
         FS::Rm(local_tmp);
         RefreshRemoteFiles(false);
         sprintf(remote_file_to_select, "%s", temp_file.c_str());
-        */
     }
 
 }

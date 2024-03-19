@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <set>
 #include <sysutil/osk.h>
+#include "clients/remote_client.h"
 #include "actions.h"
 #include "config.h"
 #include "fs.h"
@@ -102,7 +103,7 @@ namespace Windows
 
     void Init()
     {
-        // remoteclient = nullptr;
+        remoteclient = nullptr;
 
         sprintf(local_file_to_select, "..");
         sprintf(remote_file_to_select, "..");
@@ -272,7 +273,7 @@ namespace Windows
         ImVec2 pos;
 
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4);
-        bool is_connected = false; // remoteclient != nullptr && remoteclient->IsConnected();
+        bool is_connected = remoteclient != nullptr && remoteclient->IsConnected();
 
         if (ImGui::IsWindowAppearing())
         {
@@ -806,7 +807,6 @@ namespace Windows
 
     int getSelectableFlag(uint32_t remote_action)
     {
-        /*
         int flag = ImGuiSelectableFlags_Disabled;
         bool local_browser_selected = saved_selected_browser & LOCAL_BROWSER;
         bool remote_browser_selected = saved_selected_browser & REMOTE_BROWSER;
@@ -817,8 +817,6 @@ namespace Windows
         {
             flag = ImGuiSelectableFlags_None;
         }
-        */
-        int flag = ImGuiSelectableFlags_None;
         return flag;
     }
 
@@ -904,8 +902,8 @@ namespace Windows
             ImGui::PushID("Paste##settings");
             flags = ImGuiSelectableFlags_Disabled;
             if ((local_browser_selected && local_paste_files.size() > 0) ||
-                (remote_browser_selected && remote_paste_files.size() > 0 ))
-                // && remoteclient != nullptr && (remoteclient->SupportedActions() | REMOTE_ACTION_PASTE)))
+                (remote_browser_selected && remote_paste_files.size() > 0
+                && remoteclient != nullptr && (remoteclient->SupportedActions() | REMOTE_ACTION_PASTE)))
                 flags = ImGuiSelectableFlags_None;
             if (ImGui::Selectable(lang_strings[STR_PASTE], false, flags | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
             {
@@ -982,7 +980,7 @@ namespace Windows
 
             ImGui::PushID("New Folder##settings");
             flags = ImGuiSelectableFlags_None;
-            if (remote_browser_selected) // && remoteclient != nullptr && !(remoteclient->SupportedActions() & REMOTE_ACTION_NEW_FOLDER))
+            if (remote_browser_selected && remoteclient != nullptr && !(remoteclient->SupportedActions() & REMOTE_ACTION_NEW_FOLDER))
             {
                 flags = ImGuiSelectableFlags_Disabled;
             }
@@ -1000,7 +998,7 @@ namespace Windows
 
             ImGui::PushID("New File##settings");
             flags = ImGuiSelectableFlags_None;
-            if (remote_browser_selected) // && remoteclient != nullptr && !(remoteclient->SupportedActions() & REMOTE_ACTION_NEW_FILE))
+            if (remote_browser_selected && remoteclient != nullptr && !(remoteclient->SupportedActions() & REMOTE_ACTION_NEW_FILE))
             {
                 flags = ImGuiSelectableFlags_Disabled;
             }
@@ -1018,7 +1016,7 @@ namespace Windows
 
             ImGui::PushID("Edit##settings");
             flags = ImGuiSelectableFlags_None;
-            if ((remote_browser_selected) || // && remoteclient != nullptr && (!(remoteclient->SupportedActions() & REMOTE_ACTION_EDIT) || selected_remote_file.isDir)) ||
+            if ((remote_browser_selected && remoteclient != nullptr && (!(remoteclient->SupportedActions() & REMOTE_ACTION_EDIT) || selected_remote_file.isDir)) ||
                 (local_browser_selected && selected_local_file.isDir))
             {
                 flags = ImGuiSelectableFlags_Disabled;
@@ -1084,7 +1082,7 @@ namespace Windows
                 ImGui::Separator();
 
                 flags = getSelectableFlag(REMOTE_ACTION_UPLOAD);
-                if (local_browser_selected) // && remoteclient != nullptr && !(remoteclient->SupportedActions() & REMOTE_ACTION_UPLOAD))
+                if (local_browser_selected && remoteclient != nullptr && !(remoteclient->SupportedActions() & REMOTE_ACTION_UPLOAD))
                 {
                     flags = ImGuiSelectableFlags_Disabled;
                 }
@@ -1488,13 +1486,11 @@ namespace Windows
                     else
                     {
                         FS::SaveText(&edit_buffer, TMP_EDITOR_FILE);
-                        /*
                         if (remoteclient != nullptr)
                         {
                             remoteclient->Put(TMP_EDITOR_FILE, selected_remote_file.path);
                             selected_action = ACTION_REFRESH_REMOTE_FILES;
                         }
-                        */
                     }
                     editor_inprogress = false;
                     SetModalMode(false);
@@ -2290,14 +2286,12 @@ namespace Windows
         case ACTION_REMOTE_EDIT:
             if (selected_remote_file.file_size > max_edit_file_size)
                 sprintf(status_message, "%s %d", lang_strings[STR_MAX_EDIT_FILE_SIZE_MSG], max_edit_file_size);
-            /*
             else if (remoteclient != nullptr && remoteclient->Get(TMP_EDITOR_FILE, selected_remote_file.path))
             {
                 snprintf(edit_file, 255, "%s", selected_remote_file.path);
                 FS::LoadText(&edit_buffer, TMP_EDITOR_FILE);
                 editor_inprogress = true;
             }
-            */
             editor_modified = false;
             selected_action = ACTION_NONE;
             break;
@@ -2476,10 +2470,10 @@ namespace Windows
 
     void AferServerChangeCallback(int ime_result)
     {
-        /* if (ime_result == IME_DIALOG_RESULT_FINISHED)
+        if (ime_result == IME_DIALOG_RESULT_FINISHED)
         {
             CONFIG::SetClientType(remote_settings);
-        } */
+        }
     }
 
     void AfterHttpPortChangeCallback(int ime_result)/*  */

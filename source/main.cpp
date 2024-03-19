@@ -9,6 +9,7 @@
 #include <math.h>
 #include <sysutil/sysutil.h>
 #include <sys/process.h>
+#include <net/net.h>
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_tiny3d.h"
@@ -244,7 +245,8 @@ int main()
 
 	tiny3d_Init(1024 * 1024);
 	ioPadInit(7);
-
+	netInitialize();
+	
 	CONFIG::LoadConfig();
 	InitImgui();
 
@@ -256,6 +258,7 @@ int main()
 	// Cleanup
 	ImGui_ImplTiny3D_Shutdown();
 	ImGui::DestroyContext();
-
+	netDeinitialize();
+	
 	sysProcessExitSpawn2("/dev_hdd0/game/PSL145310/RELOAD.SELF", NULL, NULL, NULL, 0, 1001, SYS_PROCESS_SPAWN_STACK_SIZE_1M);
 }

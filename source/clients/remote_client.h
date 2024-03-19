@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "common.h"
-// #include "http/httplib.h"
 
 enum RemoteActions
 {
@@ -55,7 +54,6 @@ public:
     virtual int Move(const std::string &from, const std::string &to) = 0;
     virtual int Head(const std::string &path, void *buffer, uint64_t len) = 0;
     virtual int GetRange(const std::string &path, void *buffer, uint64_t size, uint64_t offset) = 0;
-    // virtual int GetRange(const std::string &path, DataSink &sink, uint64_t size, uint64_t offset) = 0;
     virtual bool FileExists(const std::string &path) = 0;
     virtual std::vector<DirEntry> ListDir(const std::string &path) = 0;
     virtual std::string GetPath(std::string path1, std::string path2) = 0;

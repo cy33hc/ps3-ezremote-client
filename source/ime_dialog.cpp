@@ -10,7 +10,6 @@
 #include <sysutil/osk.h>
 #include <sysutil/sysutil.h>
 #include <tiny3d.h>
-#include <dbglogger.h>
 
 #include "ime_dialog.h"
 
@@ -86,7 +85,6 @@ namespace Dialog
 {
   static void sysutil_exit_callback(u64 status, u64 param, void *usrdata)
   {
-    dbglogger_log("status=%d", status);
     switch (status)
     {
     case SYSUTIL_EXIT_GAME:

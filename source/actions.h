@@ -84,11 +84,11 @@ namespace Actions
     void RenameRemoteFolder(const char *old_path, const char *new_path);
     void DeleteSelectedLocalFilesThread(void *argp);
     void DeleteSelectedLocalFiles();
-    void *DeleteSelectedRemotesFilesThread(void *argp);
+    void DeleteSelectedRemotesFilesThread(void *argp);
     void DeleteSelectedRemotesFiles();
-    void *UploadFilesThread(void *argp);
+    void UploadFilesThread(void *argp);
     void UploadFiles();
-    void *DownloadFilesThread(void *argp);
+    void DownloadFilesThread(void *argp);
     void DownloadFiles();
     void Connect();
     void Disconnect();
@@ -111,9 +111,9 @@ namespace Actions
     void MoveLocalFiles();
     void CopyLocalFilesThread(void *argp);
     void CopyLocalFiles();
-    void *MoveRemoteFilesThread(void *argp);
+    void MoveRemoteFilesThread(void *argp);
     void MoveRemoteFiles();
-    void *CopyRemoteFilesThread(void *argp);
+    void CopyRemoteFilesThread(void *argp);
     void CopyRemoteFiles();
     // int DownloadAndInstallPkg(const std::string &filename, pkg_header *header);
     void CreateLocalFile(char *filename);

@@ -36,7 +36,7 @@ PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-ldbglogger -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm
+LIBS		:=	-ldbglogger -lsmb2 -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm
 
 
 #---------------------------------------------------------------------------------

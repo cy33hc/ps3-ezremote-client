@@ -136,7 +136,7 @@ extern char display_site[32];
 extern std::vector<std::string> langs;
 extern char language[128];
 extern RemoteSettings *remote_settings;
-// extern RemoteClient *remoteclient;
+extern RemoteClient *remoteclient;
 extern PackageUrlInfo install_pkg_url;
 extern char favorite_urls[MAX_FAVORITE_URLS][512];
 extern bool auto_delete_tmp_pkg;
@@ -156,6 +156,6 @@ namespace CONFIG
     void SaveGlobalConfig();
     void SaveLocalDirecotry(const std::string &path);
     void SaveFavoriteUrl(int index, char *url);
-    // void SetClientType(RemoteSettings *settings);
+    void SetClientType(RemoteSettings *settings);
 }
 #endif

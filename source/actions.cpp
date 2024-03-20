@@ -18,6 +18,7 @@
 //#include "system.h"
 //#include "sfo.h"
 //#include "zip_util.h"
+#include "dbglogger.h"
 
 namespace Actions
 {
@@ -125,7 +126,6 @@ namespace Actions
 
     void HandleChangeRemoteDirectory(const DirEntry entry)
     {
-        /*
         if (!entry.isDir)
             return;
 
@@ -162,7 +162,6 @@ namespace Actions
             sprintf(remote_file_to_select, "%s", remote_files[0].name);
         }
         selected_action = ACTION_NONE;
-        */
     }
 
     void HandleRefreshLocalFiles()
@@ -179,7 +178,6 @@ namespace Actions
 
     void HandleRefreshRemoteFiles()
     {
-        /*
         if (remoteclient != nullptr)
         {
             int prev_count = remote_files.size();
@@ -191,7 +189,6 @@ namespace Actions
             }
         }
         selected_action = ACTION_NONE;
-        */
     }
 
     void CreateNewLocalFolder(char *new_folder)
@@ -207,7 +204,6 @@ namespace Actions
 
     void CreateNewRemoteFolder(char *new_folder)
     {
-        /*
         sprintf(status_message, "%s", "");
         std::string folder = std::string(new_folder);
         folder = Util::Rtrim(Util::Trim(folder, " "), "/");
@@ -221,7 +217,6 @@ namespace Actions
         {
             sprintf(status_message, "%s - %s", lang_strings[STR_FAILED], remoteclient->LastResponse());
         }
-        */
     }
 
     void RenameLocalFolder(const char *old_path, const char *new_path)
@@ -237,7 +232,6 @@ namespace Actions
 
     void RenameRemoteFolder(const char *old_path, const char *new_path)
     {
-        /*
         sprintf(status_message, "%s", "");
         std::string new_name = std::string(new_path);
         new_name = Util::Rtrim(Util::Trim(new_name, " "), "/");
@@ -251,7 +245,6 @@ namespace Actions
         {
             sprintf(status_message, "%s - %s", lang_strings[STR_FAILED], remoteclient->LastResponse());
         }
-        */
     }
 
     void DeleteSelectedLocalFilesThread(void *argp)
@@ -330,7 +323,6 @@ namespace Actions
 
     int UploadFile(const char *src, const char *dest)
     {
-        /*
         int ret;
         if (!remoteclient->Ping())
         {
@@ -347,7 +339,7 @@ namespace Actions
             activity_inprogess = false;
             while (confirm_state == CONFIRM_WAIT)
             {
-                sceKernelUsleep(100000);
+                sysUsleep(100000);
             }
             activity_inprogess = true;
             selected_action = action_to_take;
@@ -366,14 +358,11 @@ namespace Actions
             return remoteclient->Put(src, dest);
         }
 
-        sceSystemServicePowerTick();
-        */
         return 1;
     }
 
     int Upload(const DirEntry &src, const char *dest)
     {
-        /*
         if (stop_activity)
             return 1;
 
@@ -437,7 +426,6 @@ namespace Actions
             }
             free(new_path);
         }
-        */
         return 1;
     }
 
@@ -487,7 +475,6 @@ namespace Actions
 
     int DownloadFile(const char *src, const char *dest)
     {
-        /*
         bytes_transfered = 0;
         if (!remoteclient->Size(src, &bytes_to_download))
         {
@@ -504,7 +491,7 @@ namespace Actions
             activity_inprogess = false;
             while (confirm_state == CONFIRM_WAIT)
             {
-                sceKernelUsleep(100000);
+                sysUsleep(100000);
             }
             activity_inprogess = true;
             selected_action = action_to_take;
@@ -523,14 +510,11 @@ namespace Actions
             return remoteclient->Get(dest, src);
         }
 
-        sceSystemServicePowerTick();
-        */
         return 1;
     }
 
     int Download(const DirEntry &src, const char *dest)
     {
-        /*
         if (stop_activity)
             return 1;
 
@@ -591,12 +575,12 @@ namespace Actions
             }
             free(new_path);
         }
-        */
         return 1;
     }
 
     void DownloadFilesThread(void *argp)
     {
+        dbglogger_log("in DownloadFilesThread");
         file_transfering = true;
         std::vector<DirEntry> files;
         if (multi_selected_remote_files.size() > 0)
@@ -628,7 +612,12 @@ namespace Actions
     void DownloadFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = sysThreadCreate(&bk_activity_thid, DownloadFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "DownloadFiles");
+        dbglogger_log("sysThreadCreate DownloadFilesThread");
+        u64 prio = 1500;
+        size_t stacksize = 0x1000;
+        char *threadname = "DownloadFiles";
+        int res = sysThreadCreate(&bk_activity_thid, DownloadFilesThread, NULL, prio, stacksize, THREAD_JOINABLE, threadname);
+        dbglogger_log("res=%d", res);
         if (res != 0)
         {
             file_transfering = false;
@@ -1326,7 +1315,6 @@ namespace Actions
 
     void *KeepAliveThread(void *argp)
     {
-        /*
         long idle;
         while (remoteclient != nullptr && remoteclient->clientType() == CLIENT_TYPE_FTP && remoteclient->IsConnected())
         {
@@ -1341,9 +1329,8 @@ namespace Actions
                     return NULL;
                 }
             }
-            sceKernelUsleep(500000);
+            sysUsleep(500000);
         }
-        */
         return NULL;
     }
 

@@ -1214,7 +1214,7 @@ namespace Windows
         if (confirm_transfer_state == 0)
         {
             ImGui::OpenPopup(lang_strings[STR_OVERWRITE_OPTIONS]);
-            ImGui::SetNextWindowPos(ImVec2(200, 200));
+            ImGui::SetNextWindowPos(ImVec2(200, 150));
             ImGui::SetNextWindowSizeConstraints(ImVec2(400, 100), ImVec2(400, 200), NULL, NULL);
             if (ImGui::BeginPopupModal(lang_strings[STR_OVERWRITE_OPTIONS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
@@ -1317,9 +1317,9 @@ namespace Windows
             SetModalMode(true);
             ImGui::OpenPopup(lang_strings[STR_PROGRESS]);
 
-            ImGui::SetNextWindowPos(ImVec2(175, 100));
+            ImGui::SetNextWindowPos(ImVec2(175, 150));
             ImGui::SetNextWindowSizeConstraints(ImVec2(500, 80), ImVec2(500, 400), NULL, NULL);
-            if (ImGui::BeginPopupModal(lang_strings[STR_PROGRESS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal(lang_strings[STR_PROGRESS], NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
             {
                 ImVec2 cur_pos = ImGui::GetCursorPos();
                 ImGui::SetCursorPos(cur_pos);
@@ -1332,11 +1332,11 @@ namespace Windows
                 {
                     static float progress = 0.0f;
                     progress = bytes_transfered * 1.0f / (float)bytes_to_download;
-                    ImGui::ProgressBar(progress, ImVec2(625, 0));
+                    ImGui::ProgressBar(progress, ImVec2(485, 0));
                 }
 
                 ImGui::Separator();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 245);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 175);
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
                 if (ImGui::Button(lang_strings[STR_CANCEL], ImVec2(150, 0)))
                 {
@@ -1345,7 +1345,7 @@ namespace Windows
                 }
                 if (stop_activity)
                 {
-                    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + 620);
+                    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + 485);
                     ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s", lang_strings[STR_CANCEL_ACTION_MSG]);
                     ImGui::PopTextWrapPos();
                 }

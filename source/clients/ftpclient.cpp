@@ -500,11 +500,7 @@ int FtpClient::FtpAcceptConnection(ftphandle *nData, ftphandle *nControl)
 int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode mode, int dir, std::string &cmd)
 {
 	int sData;
-	union
-	{
-		sockaddr sa;
-		sockaddr_in in;
-	} sin;
+	sockaddr_in in;
 	linger lng = {0, 0};
 	unsigned int l;
 	int on = 1;
@@ -525,26 +521,27 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 		sprintf(nControl->response, "Invalid mode %c\n", mode);
 		return -1;
 	}
-	l = sizeof(sin);
+	l = sizeof(in);
 
-	memset(&sin, 0, l);
-	sin.in.sin_family = AF_INET;
+	memset(&in, 0, l);
+	in.sin_family = AF_INET;
+	in.sin_len = sizeof(sockaddr_in);
+
 	if (!FtpSendCmd("PASV", '2', nControl))
 		return -1;
 	cp = strchr(nControl->response, '(');
 	if (cp == NULL)
 		return -1;
 	cp++;
-	sscanf(cp, "%u,%u,%u,%u,%u,%u", &v[2], &v[3], &v[4], &v[5], &v[0], &v[1]);
+	sscanf(cp, "%u,%u,%u,%u,%u,%u", &v[0], &v[1], &v[2], &v[3], &v[4], &v[5]);
 	if (nControl->correctpasv)
 		if (!CorrectPasvResponse(v))
 			return -1;
-	sin.sa.sa_data[2] = v[2];
-	sin.sa.sa_data[3] = v[3];
-	sin.sa.sa_data[4] = v[4];
-	sin.sa.sa_data[5] = v[5];
-	sin.sa.sa_data[0] = v[0];
-	sin.sa.sa_data[1] = v[1];
+	char ip[18];
+	sprintf(ip, "%d.%d.%d.%d", v[0], v[1], v[2], v[3]);
+	u16 port = v[4] * 256 + v[5];
+	inet_pton(AF_INET, ip, &in.sin_addr);
+	in.sin_port = htons(port);
 
 	if (mp_ftphandle->offset != 0)
 	{
@@ -572,19 +569,6 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 		return -1;
 	}
 
-	int const size = FTP_CLIENT_BUFSIZ;
-	if (setsockopt(sData, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size)) == -1)
-	{
-		close(sData);
-		return -1;
-	}
-
-	if (setsockopt(sData, SOL_SOCKET, SO_SNDBUF, &size, sizeof(size)) == -1)
-	{
-		close(sData);
-		return -1;
-	}
-
 	if (nControl->dir != FTP_CLIENT_CONTROL)
 		return -1;
 	std::string tmp = cmd + "\r\n";
@@ -594,7 +578,7 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 		return -1;
 	}
 
-	if (connect(sData, &sin.sa, sizeof(sin.sa)) == -1)
+	if (connect(sData, (sockaddr*)&in, sizeof(in)) == -1)
 	{
 		close(sData);
 		return -1;

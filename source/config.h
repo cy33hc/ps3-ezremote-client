@@ -148,6 +148,7 @@ extern bool show_hidden_files;
 extern char alldebrid_api_key[64];
 extern char realdebrid_api_key[64];
 extern char temp_folder[256];
+extern bool show_hidden_files;
 
 namespace CONFIG
 {

@@ -1,13 +1,20 @@
 #ifndef ACTIONS_H
 #define ACTIONS_H
 
-#include <sys/thread.h>
 #include "common.h"
+
+extern "C" {
+#include <pthread.h>
+}
 
 #define CONFIRM_NONE -1
 #define CONFIRM_WAIT 0
 #define CONFIRM_YES 1
 #define CONFIRM_NO 2
+
+#ifdef __cplusplus
+	extern "C" {
+#endif
 
 enum ACTIONS
 {
@@ -66,8 +73,8 @@ enum OverWriteType
     OVERWRITE_ALL
 };
 
-static sys_ppu_thread_t bk_activity_thid;
-static sys_ppu_thread_t ftp_keep_alive_thid;
+static pthread_t bk_activity_thid;
+static pthread_t ftp_keep_alive_thid;
 
 namespace Actions
 {
@@ -82,13 +89,13 @@ namespace Actions
     void CreateNewRemoteFolder(char *new_folder);
     void RenameLocalFolder(const char *old_path, const char *new_path);
     void RenameRemoteFolder(const char *old_path, const char *new_path);
-    void DeleteSelectedLocalFilesThread(void *argp);
+    void *DeleteSelectedLocalFilesThread(void *argp);
     void DeleteSelectedLocalFiles();
-    void DeleteSelectedRemotesFilesThread(void *argp);
+    void *DeleteSelectedRemotesFilesThread(void *argp);
     void DeleteSelectedRemotesFiles();
-    void UploadFilesThread(void *argp);
+    void *UploadFilesThread(void *argp);
     void UploadFiles();
-    void DownloadFilesThread(void *argp);
+    void *DownloadFilesThread(void *argp);
     void DownloadFiles();
     void Connect();
     void Disconnect();
@@ -107,18 +114,22 @@ namespace Actions
     void ExtractRemoteZips();
     void *MakeZipThread(void *argp);
     void MakeLocalZip();
-    void MoveLocalFilesThread(void *argp);
+    void *MoveLocalFilesThread(void *argp);
     void MoveLocalFiles();
-    void CopyLocalFilesThread(void *argp);
+    void *CopyLocalFilesThread(void *argp);
     void CopyLocalFiles();
-    void MoveRemoteFilesThread(void *argp);
+    void *MoveRemoteFilesThread(void *argp);
     void MoveRemoteFiles();
-    void CopyRemoteFilesThread(void *argp);
+    void *CopyRemoteFilesThread(void *argp);
     void CopyRemoteFiles();
     // int DownloadAndInstallPkg(const std::string &filename, pkg_header *header);
     void CreateLocalFile(char *filename);
     void CreateRemoteFile(char *filename);
     void *ExtractArchivePkg(void *argp);
 }
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif

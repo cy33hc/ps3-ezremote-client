@@ -7,6 +7,7 @@
 #include "clients/remote_client.h"
 #include "clients/ftpclient.h"
 #include "clients/smbclient.h"
+#include "clients/nfsclient.h"
 #include "common.h"
 #include "fs.h"
 #include "config.h"
@@ -247,7 +248,7 @@ namespace Actions
         }
     }
 
-    void DeleteSelectedLocalFilesThread(void *argp)
+    void *DeleteSelectedLocalFilesThread(void *argp)
     {
         std::vector<DirEntry> files;
         if (multi_selected_local_files.size() > 0)
@@ -262,12 +263,12 @@ namespace Actions
         activity_inprogess = false;
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void DeleteSelectedLocalFiles()
     {
-        int ret = sysThreadCreate(&bk_activity_thid, DeleteSelectedLocalFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "DeleteSelectedLocalFiles");
+        int ret = pthread_create(&bk_activity_thid, NULL, DeleteSelectedLocalFilesThread, NULL);
         if (ret != 0)
         {
             activity_inprogess = false;
@@ -276,7 +277,7 @@ namespace Actions
         }
     }
 
-    void DeleteSelectedRemotesFilesThread(void *argp)
+    void *DeleteSelectedRemotesFilesThread(void *argp)
     {
         if (remoteclient->Ping())
         {
@@ -308,12 +309,12 @@ namespace Actions
         }
         activity_inprogess = false;
         Windows::SetModalMode(false);
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void DeleteSelectedRemotesFiles()
     {
-        int res = sysThreadCreate(&bk_activity_thid, DeleteSelectedRemotesFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "DeleteSelectedRemoteFiles");
+        int res = pthread_create(&bk_activity_thid, NULL, DeleteSelectedRemotesFilesThread, NULL);
         if (res != 0)
         {
             activity_inprogess = false;
@@ -429,7 +430,7 @@ namespace Actions
         return 1;
     }
 
-    void UploadFilesThread(void *argp)
+    void *UploadFilesThread(void *argp)
     {
         file_transfering = true;
         std::vector<DirEntry> files;
@@ -456,13 +457,13 @@ namespace Actions
         multi_selected_local_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_REMOTE_FILES;
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void UploadFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = sysThreadCreate(&bk_activity_thid, UploadFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "UploadFiles");
+        int res = pthread_create(&bk_activity_thid, NULL, UploadFilesThread, NULL);
         if (res != 0)
         {
             activity_inprogess = false;
@@ -578,7 +579,7 @@ namespace Actions
         return 1;
     }
 
-    void DownloadFilesThread(void *argp)
+    void *DownloadFilesThread(void *argp)
     {
         dbglogger_log("in DownloadFilesThread");
         file_transfering = true;
@@ -606,18 +607,14 @@ namespace Actions
         multi_selected_remote_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        sysThreadExit(0);
+        //return nullptr;
+        return nullptr;
     }
 
     void DownloadFiles()
     {
         sprintf(status_message, "%s", "");
-        dbglogger_log("sysThreadCreate DownloadFilesThread");
-        u64 prio = 1500;
-        size_t stacksize = 0x1000;
-        char *threadname = "DownloadFiles";
-        int res = sysThreadCreate(&bk_activity_thid, DownloadFilesThread, NULL, prio, stacksize, THREAD_JOINABLE, threadname);
-        dbglogger_log("res=%d", res);
+        int res = pthread_create(&bk_activity_thid, NULL, DownloadFilesThread, NULL);
         if (res != 0)
         {
             file_transfering = false;
@@ -1242,14 +1239,14 @@ namespace Actions
             client->SetCallbackXferFunction(FtpCallback);
             remoteclient = client;
         }
+        else if (strncmp(remote_settings->server, "nfs://", 6) == 0)
+        {
+            remoteclient = new NfsClient();
+        }
         /*
         else if (strncmp(remote_settings->server, "sftp://", 7) == 0)
         {
             remoteclient = new SFTPClient();
-        }
-        else if (strncmp(remote_settings->server, "nfs://", 6) == 0)
-        {
-            remoteclient = new NfsClient();
         }
         */
         else
@@ -1438,7 +1435,7 @@ namespace Actions
         return 1;
     }
 
-    void MoveLocalFilesThread(void *argp)
+    void *MoveLocalFilesThread(void *argp)
     {
         file_transfering = true;
         for (std::vector<DirEntry>::iterator it = local_paste_files.begin(); it != local_paste_files.end(); ++it)
@@ -1471,13 +1468,13 @@ namespace Actions
         local_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void MoveLocalFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = sysThreadCreate(&bk_activity_thid, MoveLocalFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "MoveLocalFiles");
+        int res = pthread_create(&bk_activity_thid, NULL, MoveLocalFilesThread, NULL);
         if (res != 0)
         {
             file_transfering = false;
@@ -1487,7 +1484,7 @@ namespace Actions
         }
     }
 
-    void CopyLocalFilesThread(void *argp)
+    void *CopyLocalFilesThread(void *argp)
     {
         file_transfering = true;
         for (std::vector<DirEntry>::iterator it = local_paste_files.begin(); it != local_paste_files.end(); ++it)
@@ -1519,13 +1516,13 @@ namespace Actions
         local_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void CopyLocalFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = sysThreadCreate(&bk_activity_thid, CopyLocalFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "CopyLocalFiles");
+        int res = pthread_create(&bk_activity_thid, NULL, CopyLocalFilesThread, NULL);
         if (res != 0)
         {
             file_transfering = false;
@@ -1571,7 +1568,7 @@ namespace Actions
         return 1;
     }
 
-    void MoveRemoteFilesThread(void *argp)
+    void *MoveRemoteFilesThread(void *argp)
     {
         file_transfering = false;
         for (std::vector<DirEntry>::iterator it = remote_paste_files.begin(); it != remote_paste_files.end(); ++it)
@@ -1603,13 +1600,13 @@ namespace Actions
         remote_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_REMOTE_FILES;
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void MoveRemoteFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = sysThreadCreate(&bk_activity_thid, MoveRemoteFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "MoveRemoteFiles");
+        int res = pthread_create(&bk_activity_thid, NULL, CopyLocalFilesThread, NULL);
         if (res != 0)
         {
             file_transfering = false;
@@ -1686,7 +1683,7 @@ namespace Actions
         return 1;
     }
 
-    void CopyRemoteFilesThread(void *argp)
+    void *CopyRemoteFilesThread(void *argp)
     {
         file_transfering = false;
         for (std::vector<DirEntry>::iterator it = remote_paste_files.begin(); it != remote_paste_files.end(); ++it)
@@ -1722,13 +1719,13 @@ namespace Actions
         remote_paste_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_REMOTE_FILES;
-        sysThreadExit(0);
+        return nullptr;
     }
 
     void CopyRemoteFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = sysThreadCreate(&bk_activity_thid, CopyRemoteFilesThread, NULL, 1500, 0x1000, THREAD_JOINABLE, "CopyRemoteFiles");
+        int res = pthread_create(&bk_activity_thid, NULL, CopyRemoteFilesThread, NULL);
         if (res != 0)
         {
             file_transfering = false;

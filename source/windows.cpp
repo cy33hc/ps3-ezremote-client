@@ -65,7 +65,6 @@ bool file_transfering = false;
 bool set_focus_to_local = false;
 bool set_focus_to_remote = false;
 bool select_url_inprogress = false;
-int favorite_url_idx = 0;
 char extract_zip_folder[256];
 char zip_file_path[384];
 bool show_settings = false;
@@ -407,25 +406,6 @@ namespace Windows
                 Dialog::initImeDialog(lang_strings[STR_PASSWORD], remote_settings->password, 127, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
                 gui_mode = GUI_MODE_IME;
             }
-        }
-
-        ImGui::SameLine();
-        //ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5);
-        ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_ENABLE_RPI]);
-        ImGui::SameLine();
-
-        if (ImGui::Checkbox("###enable_rpi", &remote_settings->enable_rpi))
-        {
-            CONFIG::SaveConfig();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetNextWindowSize(ImVec2(200, 70));
-            ImGui::BeginTooltip();
-            ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 200);
-            ImGui::Text("%s", lang_strings[STR_ENABLE_RPI_FTP_SMB_MSG]);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
         }
         ImGui::PopStyleVar();
 
@@ -1098,16 +1078,6 @@ namespace Windows
                 }
                 ImGui::PopID();
                 ImGui::Separator();
-
-                ImGui::PushID("Install##local");
-                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
-                {
-                    SetModalMode(false);
-                    selected_action = ACTION_INSTALL_LOCAL_PKG;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::PopID();
-                ImGui::Separator();
             }
 
             if (remote_browser_selected)
@@ -1124,26 +1094,7 @@ namespace Windows
                 }
                 ImGui::PopID();
                 ImGui::Separator();
-
-                ImGui::PushID("Install##remote");
-                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
-                {
-                    SetModalMode(false);
-                    selected_action = ACTION_INSTALL_REMOTE_PKG;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::PopID();
-                ImGui::Separator();
             }
-
-            ImGui::PushID("InstallFromUrl##both");
-            if (ImGui::Selectable(lang_strings[STR_INSTALL_FROM_URL], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
-            {
-                select_url_inprogress = true;
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::PopID();
-            ImGui::Separator();
 
             ImGui::PushID("Properties##settings");
             if (ImGui::Selectable(lang_strings[STR_PROPERTIES], false, ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
@@ -1355,98 +1306,6 @@ namespace Windows
         }
     }
 
-    void ShowFavoriteUrlsDialog()
-    {
-        if (select_url_inprogress)
-        {
-            ImGuiIO &io = ImGui::GetIO();
-            (void)io;
-            ImGuiStyle *style = &ImGui::GetStyle();
-            ImVec4 *colors = style->Colors;
-
-            SetModalMode(true);
-            ImGui::OpenPopup(lang_strings[STR_FAVORITE_URLS]);
-
-            ImGui::SetNextWindowPos(ImVec2(420, 320));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(1080, 80), ImVec2(1080, 500), NULL, NULL);
-            if (ImGui::BeginPopupModal(lang_strings[STR_FAVORITE_URLS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
-            {
-                ImVec2 cur_pos = ImGui::GetCursorPos();
-                char id[128];
-                if (ImGui::Button(lang_strings[STR_ONETIME_URL], ImVec2(535, 0)))
-                {
-                    ResetImeCallbacks();
-                    sprintf(install_pkg_url.url, "%s", "");
-                    ime_single_field = install_pkg_url.url;
-                    ime_field_size = 511;
-                    ime_after_update = AfterPackageUrlCallback;
-                    ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog("URL", install_pkg_url.url, 511, OSK_PANEL_TYPE_DEFAULT, 600, 340);
-                    gui_mode = GUI_MODE_IME;
-                    select_url_inprogress = false;
-                    SetModalMode(false);
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::SameLine();
-                sprintf(id, "%s##favoriteurl", lang_strings[STR_CANCEL]);
-                if (ImGui::Button(id, ImVec2(535, 0)))
-                {
-                    select_url_inprogress = false;
-                    SetModalMode(false);
-                    ImGui::CloseCurrentPopup();
-                }
-
-                ImGui::Separator();
-                for (int j = 0; j < MAX_FAVORITE_URLS; j++)
-                {
-                    ImGui::Text("%s %d:", lang_strings[STR_SLOT], j);
-                    ImGui::SameLine();
-                    sprintf(id, "%d##saveslot", j);
-                    ImGui::PushID(id);
-                    ImGui::SetCursorPosX(cur_pos.x + 100);
-                    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-                    if (ImGui::Button(favorite_urls[j], ImVec2(875, 0)))
-                    {
-                        sprintf(install_pkg_url.url, "%s", favorite_urls[j]);
-                        memset(install_pkg_url.username, 0, sizeof(install_pkg_url.username));
-                        memset(install_pkg_url.password, 0, sizeof(install_pkg_url.password));
-                        selected_action = ACTION_INSTALL_URL_PKG;
-                        SetModalMode(false);
-                        select_url_inprogress = false;
-                        ImGui::CloseCurrentPopup();
-                    }
-                    ImGui::PopStyleVar();
-                    ImGui::PopID();
-                    if (ImGui::IsItemHovered())
-                    {
-                        if (ImGui::CalcTextSize(favorite_urls[j]).x > 870)
-                        {
-                            ImGui::BeginTooltip();
-                            ImGui::Text("%s", favorite_urls[j]);
-                            ImGui::EndTooltip();
-                        }
-                    }
-
-                    ImGui::SameLine();
-                    sprintf(id, "%s##%d", lang_strings[STR_EDIT], j);
-                    if (ImGui::Button(id, ImVec2(70, 0)))
-                    {
-                        ResetImeCallbacks();
-                        favorite_url_idx = j;
-                        ime_single_field = favorite_urls[j];
-                        ime_field_size = 511;
-                        ime_after_update = AfterFavoriteUrlCallback;
-                        ime_callback = SingleValueImeCallback;
-                        Dialog::initImeDialog("URL", favorite_urls[j], 511, OSK_PANEL_TYPE_DEFAULT, 600, 340);
-                        gui_mode = GUI_MODE_IME;
-                    }
-                }
-
-                ImGui::EndPopup();
-            }
-        }
-    }
-
     void ShowEditorDialog()
     {
         if (editor_inprogress)
@@ -1595,9 +1454,9 @@ namespace Windows
             SetModalMode(true);
             ImGui::OpenPopup(lang_strings[STR_SETTINGS]);
 
-            ImGui::SetNextWindowPos(ImVec2(1050, 80));
-            ImGui::SetNextWindowSizeConstraints(ImVec2(850, 80), ImVec2(850, 750), NULL, NULL);
-            if (ImGui::BeginPopupModal(lang_strings[STR_SETTINGS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            ImGui::SetNextWindowPos(ImVec2(420, 50));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(400, 80), ImVec2(400, 500), NULL, NULL);
+            if (ImGui::BeginPopupModal(lang_strings[STR_SETTINGS], NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
             {
                 char id[192];
                 ImVec2 field_size;
@@ -1609,7 +1468,7 @@ namespace Windows
                 ImGui::Text("%s", lang_strings[STR_LANGUAGE]);
                 ImGui::SameLine();
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::SetNextItemWidth(690);
+                ImGui::SetNextItemWidth(300);
                 if (ImGui::BeginCombo("##Language", language, ImGuiComboFlags_PopupAlignLeft | ImGuiComboFlags_HeightLargest))
                 {
                     for (int n = 0; n < langs.size(); n++)
@@ -1629,15 +1488,9 @@ namespace Windows
                 ImGui::Separator();
 
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_AUTO_DELETE_TMP_PKG]);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(805);
-                ImGui::Checkbox("##auto_delete_tmp_pkg", &auto_delete_tmp_pkg);
-                ImGui::Separator();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
                 ImGui::Text("%s", lang_strings[STR_SHOW_HIDDEN_FILES]);
                 ImGui::SameLine();
-                ImGui::SetCursorPosX(805);
+                ImGui::SetCursorPosX(375);
                 ImGui::Checkbox("##show_hidden_files", &show_hidden_files);
                 ImGui::Separator();
 
@@ -1649,169 +1502,20 @@ namespace Windows
                 sprintf(id, "%s##temp_direcotry", temp_folder);
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
                 ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
+                if (ImGui::Button(id, ImVec2(393-width, 0)))
                 {
                     ResetImeCallbacks();
                     ime_single_field = temp_folder;
                     ime_field_size = 512;
                     ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_COMPRESSED_FILE_PATH], temp_folder, 255, OSK_PANEL_TYPE_DEFAULT, 1050, 80);
+                    Dialog::initImeDialog(lang_strings[STR_COMPRESSED_FILE_PATH], temp_folder, 255, OSK_PANEL_TYPE_DEFAULT, 200, 80);
                     gui_mode = GUI_MODE_IME;
                 }
                 ImGui::PopStyleVar();
-                ImGui::Separator();
 
-                // Web Server settings
-                /* ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s", lang_strings[STR_WEB_SERVER]);
-                ImGui::Separator();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_ENABLE]);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(805);
-                ImGui::Checkbox("##web_server_enabled", &web_server_enabled);
-                ImGui::Separator(); */
-
-                field_size = ImGui::CalcTextSize(lang_strings[STR_PORT]);
-                width = field_size.x + 45;
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_PORT]);
-                ImGui::SameLine();
-                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-
-                sprintf(id, "%s##http_server_port", txt_http_server_port);
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
-                {
-                    ResetImeCallbacks();
-                    ime_single_field = txt_http_server_port;
-                    ime_field_size = 5;
-                    ime_callback = SingleValueImeCallback;
-                    ime_after_update = AfterHttpPortChangeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_PORT], txt_http_server_port, 5, OSK_PANEL_TYPE_NUMERAL, 1050, 80);
-                    gui_mode = GUI_MODE_IME;
-                }
-                ImGui::Separator();
-
-                /* ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_COMPRESSED_FILE_PATH]);
-                ImGui::SameLine();
-                field_size = ImGui::CalcTextSize(lang_strings[STR_COMPRESSED_FILE_PATH]);
-                width = field_size.x + 45;
-                sprintf(id, "%s##compressed_file_path", compressed_file_path);
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
-                {
-                    ResetImeCallbacks();
-                    ime_single_field = compressed_file_path;
-                    ime_field_size = 512;
-                    ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_COMPRESSED_FILE_PATH], compressed_file_path, 512, OSK_PANEL_TYPE_DEFAULT, 1050, 80);
-                    gui_mode = GUI_MODE_IME;
-                }
-                ImGui::Separator(); */
-                ImGui::PopStyleVar();
-
-                ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s", lang_strings[STR_ALLDEBRID]);
-                ImGui::Separator();
-
-                field_size = ImGui::CalcTextSize(lang_strings[STR_API_KEY]);
-                width = field_size.x + 45;
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_API_KEY]);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(width);
-                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-
-                if (strlen(alldebrid_api_key) > 0)
-                    sprintf(id, "%s", "*********************************************##alldebrid_api_key");
-                else
-                    sprintf(id, "%s", "##alldebrid_api_key");
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
-                {
-                    ResetImeCallbacks();
-                    ime_single_field = alldebrid_api_key;
-                    ime_field_size = 63;
-                    ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_API_KEY], alldebrid_api_key, 63, OSK_PANEL_TYPE_DEFAULT, 1050, 80);
-                    gui_mode = GUI_MODE_IME;
-                }
-                ImGui::PopStyleVar();
-                ImGui::Separator();
-
-                ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s", lang_strings[STR_REALDEBRID]);
-                ImGui::Separator();
-
-                field_size = ImGui::CalcTextSize(lang_strings[STR_API_KEY]);
-                width = field_size.x + 45;
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_API_KEY]);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(width);
-                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-
-                if (strlen(realdebrid_api_key) > 0)
-                    sprintf(id, "%s", "*********************************************##realdebrid_api_key");
-                else
-                    sprintf(id, "%s", "##realdebrid_api_key");
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
-                {
-                    ResetImeCallbacks();
-                    ime_single_field = realdebrid_api_key;
-                    ime_field_size = 63;
-                    ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_API_KEY], realdebrid_api_key, 63, OSK_PANEL_TYPE_DEFAULT, 1050, 80);
-                    gui_mode = GUI_MODE_IME;
-                }
-                ImGui::PopStyleVar();
-                ImGui::Separator();
-
-                // Google settings
-                ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s", lang_strings[STR_GOOGLE]);
-                ImGui::Separator();
-
-                ImVec2 id_size, secret_size;
-                id_size = ImGui::CalcTextSize(lang_strings[STR_CLIENT_ID]);
-                secret_size = ImGui::CalcTextSize(lang_strings[STR_CLIENT_SECRET]);
-                width = MAX(id_size.x, secret_size.x) + 45;
-
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_CLIENT_ID]);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(width);
-                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-
-                sprintf(id, "%s##client_id_input", gg_app.client_id);
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
-                {
-                    ResetImeCallbacks();
-                    ime_single_field = gg_app.client_id;
-                    ime_field_size = 139;
-                    ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_CLIENT_ID], gg_app.client_id, 139, OSK_PANEL_TYPE_DEFAULT, 1050, 80);
-                    gui_mode = GUI_MODE_IME;
-                }
-                ImGui::Separator();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::Text("%s", lang_strings[STR_CLIENT_SECRET]);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(width);
-                if (strlen(gg_app.client_secret) > 0)
-                    sprintf(id, "%s", "*********************************************##client_secret_input");
-                else
-                    sprintf(id, "%s", "##client_secret_input");
-                if (ImGui::Button(id, ImVec2(835-width, 0)))
-                {
-                    ResetImeCallbacks();
-                    ime_single_field = gg_app.client_secret;
-                    ime_field_size = 63;
-                    ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_CLIENT_SECRET], gg_app.client_secret, 63, OSK_PANEL_TYPE_DEFAULT, 1050, 80);
-                    gui_mode = GUI_MODE_IME;
-                }
-                ImGui::PopStyleVar();
                 ImGui::Separator();
                 sprintf(id, "%s##settings", lang_strings[STR_CLOSE]);
-                if (ImGui::Button(id, ImVec2(835, 0)))
+                if (ImGui::Button(id, ImVec2(385, 0)))
                 {
                     show_settings = false;
                     CONFIG::SaveGlobalConfig();
@@ -1968,7 +1672,6 @@ namespace Windows
             StatusPanel();
             ShowProgressDialog();
             ShowActionsDialog();
-            ShowFavoriteUrlsDialog();
             ShowEditorDialog();
             ShowSettingsDialog();
             ShowImageDialog();
@@ -2407,11 +2110,6 @@ namespace Windows
     void AfterPackageUrlCallback(int ime_result)
     {
         selected_action = ACTION_INSTALL_URL_PKG;
-    }
-
-    void AfterFavoriteUrlCallback(int ime_result)
-    {
-        CONFIG::SaveFavoriteUrl(favorite_url_idx, favorite_urls[favorite_url_idx]);
     }
 
     void AfterFolderNameCallback(int ime_result)

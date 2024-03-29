@@ -203,7 +203,6 @@ namespace Windows
     void AfterFolderNameCallback(int ime_result);
     void CancelActionCallBack(int ime_result);
     void AfterPackageUrlCallback(int ime_result);
-    void AfterFavoriteUrlCallback(int ime_result);
     void AfterExtractFolderCallback(int ime_result);
     void AfterExtractRemoteFolderCallback(int ime_result);
     void AfterZipFileCallback(int ime_result);

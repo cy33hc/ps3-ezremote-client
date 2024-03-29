@@ -236,6 +236,7 @@ void InitImgui()
 	colors[ImGuiCol_TabUnfocused]         = bgColor;
 	colors[ImGuiCol_TabUnfocusedActive]   = panelActiveColor;
 	colors[ImGuiCol_TabHovered]           = panelHoverColor;
+	colors[ImGuiCol_ModalWindowDimBg]     = { 0.f, 0.f, 0.f, 0.0f };
 }
 
 int main()

@@ -1274,10 +1274,10 @@ namespace Windows
             {
                 ImVec2 cur_pos = ImGui::GetCursorPos();
                 ImGui::SetCursorPos(cur_pos);
-                ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 620);
+                ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 485);
                 ImGui::Text("%s", activity_message);
                 ImGui::PopTextWrapPos();
-                ImGui::SetCursorPosY(cur_pos.y + 95);
+                ImGui::SetCursorPosY(cur_pos.y + 50);
 
                 if (file_transfering)
                 {
@@ -1301,7 +1301,7 @@ namespace Windows
                     ImGui::PopTextWrapPos();
                 }
                 ImGui::EndPopup();
-                //sceSystemServicePowerTick();
+
             }
         }
     }

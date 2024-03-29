@@ -41,7 +41,6 @@
 #define CONFIG_MAX_EDIT_FILE_SIZE "max_edit_file_size"
 
 #define CONFIG_LAST_SITE "last_site"
-#define CONFIG_AUTO_DELETE_TMP_PKG "auto_delete_tmp_pkg"
 
 #define CONFIG_LOCAL_DIRECTORY "local_directory"
 #define CONFIG_TMP_FOLDER_PATH "temp_folder"
@@ -90,7 +89,6 @@ extern char language[128];
 extern RemoteSettings *remote_settings;
 extern RemoteClient *remoteclient;
 extern PackageUrlInfo install_pkg_url;
-extern bool auto_delete_tmp_pkg;
 extern int max_edit_file_size;
 extern unsigned char cipher_key[32];
 extern unsigned char cipher_iv[16];

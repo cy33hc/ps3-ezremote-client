@@ -30,7 +30,6 @@ std::set<std::string> text_file_extensions;
 std::set<std::string> image_file_extensions;
 std::map<std::string, RemoteSettings> site_settings;
 PackageUrlInfo install_pkg_url;
-bool auto_delete_tmp_pkg;
 int max_edit_file_size;
 bool show_hidden_files;
 char temp_folder[256];
@@ -144,9 +143,6 @@ namespace CONFIG
         sprintf(local_directory, "%s", ReadString(CONFIG_GLOBAL, CONFIG_LOCAL_DIRECTORY, "/"));
         WriteString(CONFIG_GLOBAL, CONFIG_LOCAL_DIRECTORY, local_directory);
 
-        auto_delete_tmp_pkg = ReadBool(CONFIG_GLOBAL, CONFIG_AUTO_DELETE_TMP_PKG, true);
-        WriteBool(CONFIG_GLOBAL, CONFIG_AUTO_DELETE_TMP_PKG, auto_delete_tmp_pkg);
-
         max_edit_file_size = ReadInt(CONFIG_GLOBAL, CONFIG_MAX_EDIT_FILE_SIZE, MAX_EDIT_FILE_SIZE);
         WriteInt(CONFIG_GLOBAL, CONFIG_MAX_EDIT_FILE_SIZE, max_edit_file_size);
 
@@ -243,7 +239,6 @@ namespace CONFIG
         OpenIniFile(CONFIG_INI_FILE);
 
         WriteString(CONFIG_GLOBAL, CONFIG_TMP_FOLDER_PATH, temp_folder);
-        WriteBool(CONFIG_GLOBAL, CONFIG_AUTO_DELETE_TMP_PKG, auto_delete_tmp_pkg);
         WriteBool(CONFIG_GLOBAL, CONFIG_SHOW_HIDDEN_FILES, show_hidden_files);
         WriteString(CONFIG_GLOBAL, CONFIG_LANGUAGE, language);
         //WriteInt(CONFIG_HTTP_SERVER, CONFIG_HTTP_SERVER_PORT, http_server_port);

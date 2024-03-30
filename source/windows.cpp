@@ -14,6 +14,7 @@
 #include "windows.h"
 #include "IconsFontAwesome6.h"
 #include "OpenFontIcons.h"
+#include "dbglogger.h"
 
 #define MAX_IMAGE_HEIGHT 980
 #define MAX_IMAGE_WIDTH 1820

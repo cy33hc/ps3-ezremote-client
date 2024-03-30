@@ -19,14 +19,16 @@ BaseClient::~BaseClient()
 
 int BaseClient::DownloadProgressCallback(void* ptr, double dTotalToDownload, double dNowDownloaded, double dTotalToUpload, double dNowUploaded)
 {
-    int64_t *bytes_transfered = (int64_t *)ptr;
+    CHTTPClient::ProgressFnStruct *progress_data = (CHTTPClient::ProgressFnStruct*) ptr;
+    int64_t *bytes_transfered = (int64_t *) progress_data->pOwner;
 	*bytes_transfered = dNowDownloaded;
     return 0;
 }
 
 int BaseClient::UploadProgressCallback(void* ptr, double dTotalToDownload, double dNowDownloaded, double dTotalToUpload, double dNowUploaded)
 {
-    int64_t *bytes_transfered = (int64_t *)ptr;
+    CHTTPClient::ProgressFnStruct *progress_data = (CHTTPClient::ProgressFnStruct*) ptr;
+    int64_t *bytes_transfered = (int64_t *) progress_data->pOwner;
     *bytes_transfered = dNowUploaded;
     return 0;
 }
@@ -74,7 +76,7 @@ int BaseClient::Size(const std::string &path, int64_t *size)
     {
         if (HTTP_SUCCESS(res.iCode))
         {
-            std::string content_length = res.mapHeaders["Content-Length"];
+            std::string content_length = res.mapHeadersLowercase["content-length"];
             if (content_length.length() > 0)
                 *size = atoll(content_length.c_str());
             return 1;
@@ -89,9 +91,15 @@ int BaseClient::Size(const std::string &path, int64_t *size)
 
 int BaseClient::Get(const std::string &outputfile, const std::string &path, uint64_t offset)
 {
-    bytes_transfered = 0;
     long status;
-
+    bytes_transfered = 0;
+    if (!Size(path, &bytes_to_download))
+    {
+        sprintf(this->response, "%s", STR_FAIL_DOWNLOAD_MSG);
+        return 0;
+    }
+    dbglogger_log("baseclient bytes_to_download=%ld", bytes_to_download);
+    
     client->SetProgressFnCallback(&bytes_transfered, DownloadProgressCallback);
     std::string encoded_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(path));
     if (client->DownloadFile(outputfile, encoded_url, status))

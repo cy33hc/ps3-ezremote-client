@@ -185,11 +185,11 @@ namespace Lang
 		char langFile[LANG_STR_SIZE * 2];
 		char identifier[LANG_ID_SIZE], buffer[LANG_STR_SIZE];
 
-		std::string lang = std::string("English");
+		std::string lang = std::string(language);
 		lang = Util::Trim(lang, " ");
 		if (lang.size() > 0 && lang.compare("Default") != 0)
 		{
-			sprintf(langFile, "%s/langs/%s.ini", DATA_PATH, lang.c_str());
+			sprintf(langFile, "%s/%s.ini", APP_LANGS_DIR, lang.c_str());
 		}
 		else
 		{

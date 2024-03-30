@@ -18,7 +18,7 @@
 #include "windows.h"
 #include "util.h"
 
-#define BUF_SIZE 256*1024
+#define BUF_SIZE 1048576
 
 NfsClient::NfsClient()
 {

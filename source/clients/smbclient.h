@@ -46,8 +46,8 @@ private:
 	struct smb2_context *smb2;
 	char response[1024];
 	bool connected = false;
-	uint32_t max_read_size = 0;
-	uint32_t max_write_size = 0;
+	uint32_t max_read_size = 1048576;
+	uint32_t max_write_size = 1048576;
 };
 
 #endif

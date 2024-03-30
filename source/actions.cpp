@@ -8,6 +8,7 @@
 #include "clients/ftpclient.h"
 #include "clients/smbclient.h"
 #include "clients/nfsclient.h"
+#include "clients/webdav.h"
 #include "common.h"
 #include "fs.h"
 #include "config.h"
@@ -1222,12 +1223,12 @@ namespace Actions
             else if (strcmp(remote_settings->http_server_type, HTTP_SERVER_RCLONE) == 0)
                 remoteclient = new RCloneClient();
         }
-        else if (strncmp(remote_settings->server, "webdavs://", 10) == 0 || strncmp(remote_settings->server, "webdav://", 9) == 0)
+        */
+        if (strncmp(remote_settings->server, "webdavs://", 10) == 0 || strncmp(remote_settings->server, "webdav://", 9) == 0)
         {
             remoteclient = new WebDAVClient();
         }
-        */
-        if (strncmp(remote_settings->server, "smb://", 6) == 0)
+        else if (strncmp(remote_settings->server, "smb://", 6) == 0)
         {
             remoteclient = new SmbClient();
         }

@@ -22,6 +22,7 @@
 #define TMP_SFO_PATH DATA_PATH "/tmp_pkg.sfo"
 #define TMP_ICON_PATH DATA_PATH "/tmp_icon.png"
 #define TMP_FOLDER_PATH DATA_PATH "/tmp"
+#define CACERT_FILE APP_FOLDER "/cacert.pem"
 
 #define CONFIG_GLOBAL "Global"
 

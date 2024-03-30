@@ -60,8 +60,8 @@ int SmbClient::Connect(const std::string &url, const std::string &user, const st
 
 	dbglogger_log("before smb2_destroy_url");
 	smb2_destroy_url(smb_url);
-	max_read_size = smb2_get_max_read_size(smb2);
-	max_write_size = smb2_get_max_write_size(smb2);
+	//max_read_size = smb2_get_max_read_size(smb2);
+	//max_write_size = smb2_get_max_write_size(smb2);
 	connected = true;
 
 	dbglogger_log("return");

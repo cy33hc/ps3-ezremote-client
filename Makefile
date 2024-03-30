@@ -27,16 +27,16 @@ SCETOOL_FLAGS	+=
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/imgui source/clients
+SOURCES		:=	source source/imgui source/clients source/pugixml
 DATA		:=	data
 SHADERS		:=	shaders
-INCLUDES	:=	source source/imgui source/clients
+INCLUDES	:=	source source/imgui source/clients source/pugixml
 PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-lcrypto -lpthread -ldbglogger -lsmb2 -lnfs -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm
+LIBS		:=	-lcurl -lpolarssl -lz -lhttpclient -lcrypto -lpthread -ldbglogger -lsmb2 -lnfs -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm
 
 
 #---------------------------------------------------------------------------------

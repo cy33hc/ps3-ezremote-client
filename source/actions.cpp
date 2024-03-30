@@ -1607,7 +1607,7 @@ namespace Actions
     void MoveRemoteFiles()
     {
         sprintf(status_message, "%s", "");
-        int res = pthread_create(&bk_activity_thid, NULL, CopyLocalFilesThread, NULL);
+        int res = pthread_create(&bk_activity_thid, NULL, MoveRemoteFilesThread, NULL);
         if (res != 0)
         {
             file_transfering = false;

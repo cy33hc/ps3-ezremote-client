@@ -125,8 +125,8 @@ int BaseClient::GetRange(const std::string &path, void *buffer, uint64_t size, u
     std::string encoded_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(path));
     if (client->Get(encoded_url, headers, res))
     {
-        uint64_t len = MIN(size, res.strBody.length());
-        memcpy(buffer, res.strBody.c_str(), len);
+        uint64_t len = MIN(size, res.strBody.size());
+        memcpy(buffer, res.strBody.data(), len);
         return 1;
     }
     else
@@ -178,8 +178,8 @@ int BaseClient::Head(const std::string &path, void *buffer, uint64_t size)
     std::string encoded_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(path));
     if (client->Get(encoded_url, headers, res))
     {
-        uint64_t len = MIN(size, res.strBody.length());
-        memcpy(buffer, res.strBody.c_str(), len);
+        uint64_t len = MIN(size, res.strBody.size());
+        memcpy(buffer, res.strBody.data(), len);
         return 1;
     }
     else
@@ -257,6 +257,7 @@ int BaseClient::Quit()
 {
     if (client != nullptr)
     {
+        client->CleanupSession();
         delete client;
         client = nullptr;
     }

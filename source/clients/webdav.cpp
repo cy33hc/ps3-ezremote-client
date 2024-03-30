@@ -8,6 +8,7 @@
 #include "lang.h"
 #include "util.h"
 #include "windows.h"
+#include "dbglogger.h"
 
 static const char *months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
@@ -45,7 +46,7 @@ std::vector<DirEntry> WebDAVClient::ListDir(const std::string &path)
     if (PropFind(path, 1, res))
     {
         pugi::xml_document document;
-        document.load_buffer(res.strBody.c_str(), res.strBody.length());
+        document.load_buffer(res.strBody.data(), res.strBody.size());
         auto multistatus = document.select_node("*[local-name()='multistatus']").node();
         auto responses = multistatus.select_nodes("*[local-name()='response']");
         for (auto response : responses)
@@ -142,7 +143,7 @@ int WebDAVClient::Put(const std::string &inputfile, const std::string &path, uin
 {
     size_t bytes_remaining = FS::GetSize(inputfile);
     bytes_transfered = 0;
-    
+
     client->SetProgressFnCallback(&bytes_transfered, UploadProgressCallback);
     std::string encode_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(path));
     long status;
@@ -211,7 +212,7 @@ int WebDAVClient::Copy(const std::string &from, const std::string &to)
     CHTTPClient::HttpResponse res;
 
     headers["Accept"] =  "*/*";
-    headers["Destination"] = CHTTPClient::EncodeUrl(GetFullPath(to));
+    headers["Destination"] = GetFullPath(to);
     std::string encode_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(from));
 
     if (client->CustomRequest("COPY", encode_url, headers, res))
@@ -229,14 +230,16 @@ int WebDAVClient::Move(const std::string &from, const std::string &to)
     CHTTPClient::HttpResponse res;
 
     headers["Accept"] =  "*/*";
-    headers["Destination"] = CHTTPClient::EncodeUrl(GetFullPath(to));
+    headers["Destination"] = GetFullPath(to);
     std::string encode_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(from));
 
     if (client->CustomRequest("MOVE", encode_url, headers, res))
     {
+        dbglogger_log("status=%d, errMessage=%s", res.iCode, res.errMessage.c_str());
         if (HTTP_SUCCESS(res.iCode))
             return 1;
     }
+    dbglogger_log("status=%d, errMessage=%s", res.iCode, res.errMessage.c_str());
 
     return 0;
 }

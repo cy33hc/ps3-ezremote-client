@@ -280,7 +280,7 @@ namespace Windows
             ImGui::SetItemDefaultFocus();
         }
         sprintf(id, "%s###connectbutton", is_connected ? lang_strings[STR_DISCONNECT] : lang_strings[STR_CONNECT]);
-        if (ImGui::Button(id, ImVec2(65, 0)))
+        if (ImGui::Button(id, ImVec2(75, 0)))
         {
             selected_action = is_connected ? ACTION_DISCONNECT : ACTION_CONNECT;
         }
@@ -1221,25 +1221,25 @@ namespace Windows
         {
             ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_TYPE]);
             ImGui::SameLine();
-            ImGui::SetCursorPosX(150);
+            ImGui::SetCursorPosX(100);
             ImGui::Text("%s", item.isDir ? lang_strings[STR_FOLDER] : lang_strings[STR_FILE]);
             ImGui::Separator();
 
             ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_NAME]);
             ImGui::SameLine();
-            ImGui::SetCursorPosX(150);
+            ImGui::SetCursorPosX(100);
             ImGui::TextWrapped("%s", item.name);
             ImGui::Separator();
 
             ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_SIZE]);
             ImGui::SameLine();
-            ImGui::SetCursorPosX(150);
+            ImGui::SetCursorPosX(100);
             ImGui::Text("%ld   (%s)", item.file_size, item.display_size);
             ImGui::Separator();
 
             ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_DATE]);
             ImGui::SameLine();
-            ImGui::SetCursorPosX(150);
+            ImGui::SetCursorPosX(100);
             ImGui::Text("%02d/%02d/%d %02d:%02d:%02d", item.modified.day, item.modified.month, item.modified.year,
                         item.modified.hours, item.modified.minutes, item.modified.seconds);
             ImGui::Separator();

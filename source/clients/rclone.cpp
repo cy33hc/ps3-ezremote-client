@@ -170,41 +170,30 @@ std::vector<DirEntry> RCloneClient::ListDir(const std::string &path)
                 tmp_string = std::string((const char *)value, value_len);
                 std::vector<std::string> date_time = Util::Split(tmp_string, " ");
 
-                /*
-                OrbisDateTime gmt;
-                OrbisDateTime lt;
-
                 if (date_time.size() > 1)
                 {
                     std::vector<std::string> adate = Util::Split(date_time[0], "-");
                     if (adate.size() == 3)
                     {
-                        gmt.year = atoi(adate[0].c_str());
-                        gmt.month = atoi(adate[1].c_str());
-                        gmt.day = atoi(adate[2].c_str());
+                        entry.modified.year = atoi(adate[0].c_str());
+                        entry.modified.month = atoi(adate[1].c_str());
+                        entry.modified.day = atoi(adate[2].c_str());
                     }
 
                     std::vector<std::string> atime = Util::Split(date_time[1], ":");
                     if (atime.size() == 3)
                     {
-                        gmt.hour = atoi(atime[0].c_str());
-                        gmt.minute = atoi(atime[1].c_str());
+                        entry.modified.hours = atoi(atime[0].c_str());
+                        entry.modified.minutes = atoi(atime[1].c_str());
 
                         std::vector<std::string> sec_msec = Util::Split(atime[2], ".");
                         if (sec_msec.size() > 0)
                         {
-                            gmt.second = atoi(sec_msec[0].c_str());
+                            entry.modified.seconds = atoi(sec_msec[0].c_str());
                         }
                     }
                 }
-                convertUtcToLocalTime(&gmt, &lt);
-                entry.modified.day = lt.day;
-                entry.modified.month = lt.month;
-                entry.modified.year = lt.year;
-                entry.modified.hours = lt.hour;
-                entry.modified.minutes = lt.minute;
-                entry.modified.seconds = lt.second;
-                */
+
                 lxb_dom_collection_destroy(td_collection, true);
                 out.push_back(entry);
             }

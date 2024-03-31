@@ -13,13 +13,13 @@
 
 typedef struct
 {
-    uint16_t year;
-    uint8_t month;
-    uint8_t day;
-    uint8_t dayOfWeek;
-    uint8_t hours;
-    uint8_t minutes;
-    uint8_t seconds;
+    uint32_t year;
+    uint32_t month;
+    uint32_t day;
+    uint32_t dayOfWeek;
+    uint32_t hours;
+    uint32_t minutes;
+    uint32_t seconds;
     uint32_t microsecond;
 } DateTime;
 

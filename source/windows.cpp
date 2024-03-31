@@ -1366,9 +1366,10 @@ namespace Windows
                 }
 
                 ImGui::Separator();
-                ImGui::BeginChild("Editor##ChildWindow", ImVec2(785, 390));
+                ImGui::BeginChild("Editor##ChildWindow", ImVec2(785, 385));
                 int j = 0;
                 static int insert_item = -1;
+                ImGui::Dummy(ImVec2(700, 4));
                 for (std::vector<std::string>::iterator it = edit_buffer.begin(); it != edit_buffer.end(); it++)
                 {
                     ImGui::Text("%s", ICON_FA_CARET_RIGHT);
@@ -1377,7 +1378,7 @@ namespace Windows
                     sprintf(id, "%d##editor", j);
                     ImGui::PushID(id);
                     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-                    if (ImGui::Selectable(it->c_str(), false, ImGuiSelectableFlags_DontClosePopups, ImVec2(1275, 0)))
+                    if (ImGui::Selectable(it->c_str(), false, ImGuiSelectableFlags_DontClosePopups, ImVec2(760, 0)))
                     {
                         edit_line_num = j;
                         snprintf(edit_line, 1023, "%s", it->c_str());
@@ -1440,7 +1441,9 @@ namespace Windows
                 }
                 insert_item = -1;
                 ImGui::EndChild();
+                ImGui::Dummy(ImVec2(700, 4));
 
+                ImGui::Separator();
                 ImGui::Text("%s%s", (editor_modified ? "**" : ""), edit_file);
                 ImGui::Separator();
                 ImGui::Text("L1 - %s        R1 - %s        %s - %s        %s - %s", lang_strings[STR_DELETE_LINE], lang_strings[STR_INSERT_LINE],

@@ -2,12 +2,18 @@
 #include <stdlib.h>
 #include <sys/thread.h>
 #include <sys/systime.h>
-//#include <lexbor/html/parser.h>
-//#include <lexbor/dom/interfaces/element.h>
-#include "clients/remote_client.h"
+#include <lexbor/html/parser.h>
+#include <lexbor/dom/interfaces/element.h>
+#include "clients/apache.h"
 #include "clients/ftpclient.h"
-#include "clients/smbclient.h"
+#include "clients/iis.h"
 #include "clients/nfsclient.h"
+#include "clients/nginx.h"
+#include "clients/npxserve.h"
+#include "clients/remote_client.h"
+#include "clients/rclone.h"
+#include "clients/smbclient.h"
+// #include "clients/sftpclient.h"
 #include "clients/webdav.h"
 #include "common.h"
 #include "fs.h"
@@ -1210,7 +1216,8 @@ namespace Actions
             remoteclient = new GDriveClient();
             remoteclient->Connect("", "", "");
         }
-        else if (strncmp(remote_settings->server, "https://", 8) == 0 || strncmp(remote_settings->server, "http://", 7) == 0)
+        */
+        if (strncmp(remote_settings->server, "https://", 8) == 0 || strncmp(remote_settings->server, "http://", 7) == 0)
         {
             if (strcmp(remote_settings->http_server_type, HTTP_SERVER_APACHE) == 0)
                 remoteclient = new ApacheClient();
@@ -1223,8 +1230,7 @@ namespace Actions
             else if (strcmp(remote_settings->http_server_type, HTTP_SERVER_RCLONE) == 0)
                 remoteclient = new RCloneClient();
         }
-        */
-        if (strncmp(remote_settings->server, "webdavs://", 10) == 0 || strncmp(remote_settings->server, "webdav://", 9) == 0)
+        else if (strncmp(remote_settings->server, "webdavs://", 10) == 0 || strncmp(remote_settings->server, "webdav://", 9) == 0)
         {
             remoteclient = new WebDAVClient();
         }

@@ -48,7 +48,7 @@ int SmbClient::Connect(const std::string &url, const std::string &user, const st
 	if (pass.length() > 0)
 		smb2_set_password(smb2, pass.c_str());
 	smb2_set_security_mode(smb2, SMB2_NEGOTIATE_SIGNING_ENABLED);
-	smb2_set_version(smb2, SMB2_VERSION_0302);
+	smb2_set_version(smb2, SMB2_VERSION_ANY);
 	smb2_set_timeout(smb2, 30);
 
 	dbglogger_log("before smb2_connect_share server=%s, share=%s", smb_url->server, smb_url->share);

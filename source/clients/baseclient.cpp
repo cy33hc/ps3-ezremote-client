@@ -245,6 +245,7 @@ bool BaseClient::Ping()
     {
         sprintf(this->response, "%s", res.errMessage.c_str());
     }
+    dbglogger_log("status=%d, msg=%s", res.iCode, res.errMessage.c_str());
     return false;
 }
 

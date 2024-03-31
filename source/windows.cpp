@@ -1252,6 +1252,12 @@ namespace Windows
                 selected_action = ACTION_NONE;
                 ImGui::CloseCurrentPopup();
             }
+            if (ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false))
+            {
+                SetModalMode(false);
+                selected_action = ACTION_NONE;
+                ImGui::CloseCurrentPopup();
+            }
 
             ImGui::EndPopup();
         }
@@ -1283,8 +1289,10 @@ namespace Windows
                 if (file_transfering)
                 {
                     static float progress = 0.0f;
+                    static char progress_text[32];
                     progress = bytes_transfered * 1.0f / (float)bytes_to_download;
-                    ImGui::ProgressBar(progress, ImVec2(485, 0));
+                    sprintf(progress_text, "%.3f%%", progress*100.0f);
+                    ImGui::ProgressBar(progress, ImVec2(485, 0), progress_text);
                 }
 
                 ImGui::Separator();

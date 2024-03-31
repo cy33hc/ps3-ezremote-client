@@ -88,5 +88,20 @@ int openssl_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char
 
 int getuid(void)
 {
-    return 0;
+    return 1000;
+}
+
+int geteuid(void)
+{
+    return 1000;
+}
+
+int getgid(void)
+{
+    return 1000;
+}
+
+int getegid(void)
+{
+    return 1000;
 }

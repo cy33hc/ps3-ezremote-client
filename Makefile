@@ -36,7 +36,7 @@ PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-lcurl -lpolarssl -lz -lhttpclient -lcrypto -lpthread -ldbglogger -lsmb2 -lnfs -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm
+LIBS		:=	 -llexbor_static -lcurl -lssh2 -lhttpclient -lsmb2 -lnfs -lpolarssl -lcrypto -lpthread -ldbglogger -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz
 
 
 #---------------------------------------------------------------------------------

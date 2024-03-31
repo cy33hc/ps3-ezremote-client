@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 #include <string.h>
-//#include <lexbor/html/parser.h>
-//#include <lexbor/dom/interfaces/element.h>
+#include <lexbor/html/parser.h>
+#include <lexbor/dom/interfaces/element.h>
 
 #define HTTP_SUCCESS(x) (x >= 200 && x < 300)
 #define MIN(a,b) (((a)<(b))?(a):(b))
@@ -88,7 +88,6 @@ struct DirEntry
     }
 };
 
-/*
 static lxb_dom_node_t *NextChildElement(lxb_dom_element_t *element)
 {
     lxb_dom_node_t *node = element->node.first_child;
@@ -128,5 +127,5 @@ static lxb_dom_node_t *NextTextNode(lxb_dom_node_t *node)
     }
     return next;
 }
-*/
+
 #endif

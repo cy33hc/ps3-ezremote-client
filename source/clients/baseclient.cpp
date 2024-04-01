@@ -7,7 +7,6 @@
 #include "lang.h"
 #include "util.h"
 #include "windows.h"
-#include "dbglogger.h"
 
 BaseClient::BaseClient(){};
 
@@ -43,10 +42,9 @@ int BaseClient::Connect(const std::string &url, const std::string &username, con
         this->host_url = url.substr(0, root_pos);
         this->base_path = url.substr(root_pos);
     }
-    client = new CHTTPClient([](const std::string& log){dbglogger_log(log.c_str());});
+    client = new CHTTPClient([](const std::string& log){});
     client->SetBasicAuth(username, password);
-    //client->SetTimeout(30);
-    client->InitSession(true, CHTTPClient::SettingsFlag::ENABLE_LOG);
+    client->InitSession(true, CHTTPClient::SettingsFlag::NO_FLAGS);
     client->SetCertificateFile(CACERT_FILE);
 
     if (Ping())
@@ -98,8 +96,7 @@ int BaseClient::Get(const std::string &outputfile, const std::string &path, uint
         sprintf(this->response, "%s", STR_FAIL_DOWNLOAD_MSG);
         return 0;
     }
-    dbglogger_log("baseclient bytes_to_download=%ld", bytes_to_download);
-    
+
     client->SetProgressFnCallback(&bytes_transfered, DownloadProgressCallback);
     std::string encoded_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(path));
     if (client->DownloadFile(outputfile, encoded_url, status))
@@ -245,7 +242,6 @@ bool BaseClient::Ping()
     {
         sprintf(this->response, "%s", res.errMessage.c_str());
     }
-    dbglogger_log("status=%d, msg=%s", res.iCode, res.errMessage.c_str());
     return false;
 }
 

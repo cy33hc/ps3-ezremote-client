@@ -1,3 +1,4 @@
+#include <sys/systime.h>
 #include "crypt.h"
 
 int openssl_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
@@ -105,3 +106,24 @@ int getegid(void)
 {
     return 1000;
 }
+/*
+int lstat(const char *path, struct stat *buf)
+{
+    return stat(path, buf);
+}
+
+int symlink(const char *path1, const char *path2)
+{
+    return -1;
+}
+
+ssize_t readlink(const char *restrict pathname, char *restrict buf, size_t bufsiz)
+{
+    return -1;
+}
+
+int clock_gettime(clockid_t clockid, struct timespec *tp)
+{
+    return sysGetCurrentTime(&tp->tv_sec, &tp->tv_nsec);
+}
+*/

@@ -1,6 +1,5 @@
 #include <io/pad.h>
 #include <tiny3d.h>
-#include <dbglogger.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -10,6 +9,7 @@
 #include <sysutil/sysutil.h>
 #include <sys/process.h>
 #include <net/net.h>
+#include <dbglogger.h>
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_tiny3d.h"

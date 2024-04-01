@@ -13,7 +13,6 @@
 #include "clients/remote_client.h"
 #include "clients/rclone.h"
 #include "clients/smbclient.h"
-// #include "clients/sftpclient.h"
 #include "clients/webdav.h"
 #include "common.h"
 #include "fs.h"
@@ -22,11 +21,7 @@
 #include "util.h"
 #include "lang.h"
 #include "actions.h"
-//#include "installer.h"
-//#include "system.h"
-//#include "sfo.h"
-//#include "zip_util.h"
-#include "dbglogger.h"
+#include "zip_util.h"
 
 namespace Actions
 {
@@ -588,7 +583,6 @@ namespace Actions
 
     void *DownloadFilesThread(void *argp)
     {
-        dbglogger_log("in DownloadFilesThread");
         file_transfering = true;
         std::vector<DirEntry> files;
         if (multi_selected_remote_files.size() > 0)
@@ -940,7 +934,6 @@ namespace Actions
 
     void *ExtractZipThread(void *argp)
     {
-        /*
         FS::MkDirs(extract_zip_folder);
         std::vector<DirEntry> files;
         if (multi_selected_local_files.size() > 0)
@@ -958,7 +951,7 @@ namespace Actions
                 if (ret == 0)
                 {
                     sprintf(status_message, "%s %s", lang_strings[STR_FAILED_TO_EXTRACT], it->name);
-                    sceKernelUsleep(100000);
+                    sysUsleep(100000);
                 }
             }
         }
@@ -966,13 +959,11 @@ namespace Actions
         multi_selected_local_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        */
         return NULL;
     }
 
     void ExtractLocalZips()
     {
-        /*
         sprintf(status_message, "%s", "");
         int res = pthread_create(&bk_activity_thid, NULL, ExtractZipThread, NULL);
         if (res != 0)
@@ -982,7 +973,6 @@ namespace Actions
             multi_selected_local_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     void *ExtractRemoteZipThread(void *argp)
@@ -1034,8 +1024,7 @@ namespace Actions
 
     void *MakeZipThread(void *argp)
     {
-        /*
-        zipFile zf = zipOpen64(zip_file_path, APPEND_STATUS_CREATE);
+        struct zip *zf = zip_open(zip_file_path, ZIP_CREATE, NULL);
         if (zf != NULL)
         {
             std::vector<DirEntry> files;
@@ -1048,14 +1037,14 @@ namespace Actions
             {
                 if (stop_activity)
                     break;
-                int res = ZipUtil::ZipAddPath(zf, it->path, strlen(it->directory) + 1, Z_DEFAULT_COMPRESSION);
+                int res = ZipUtil::ZipAddPath(zf, it->path, strlen(it->directory)+1);
                 if (res <= 0)
                 {
                     sprintf(status_message, "%s", lang_strings[STR_ERROR_CREATE_ZIP]);
-                    sceKernelUsleep(1000000);
+                    sysUsleep(1000000);
                 }
             }
-            zipClose(zf, NULL);
+            zip_close(zf);
         }
         else
         {
@@ -1065,13 +1054,12 @@ namespace Actions
         multi_selected_local_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        */
+
         return NULL;
     }
 
     void MakeLocalZip()
     {
-        /*
         sprintf(status_message, "%s", "");
         int res = pthread_create(&bk_activity_thid, NULL, MakeZipThread, NULL);
         if (res != 0)
@@ -1081,7 +1069,6 @@ namespace Actions
             multi_selected_local_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     void *InstallUrlPkgThread(void *argp)

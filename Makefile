@@ -36,15 +36,15 @@ PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	 -llexbor_static -lcurl -lssh2 -lhttpclient -lsmb2 -lnfs -lpolarssl -lcrypto -lpthread -ldbglogger -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz
+LIBS		:=	  -ldbglogger -lzip -lunrar -lun7zip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
 
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	-DPSL1GHT -O2 -Wall -mcpu=cell  -fpermissive $(MACHDEP) $(INCLUDE)
-CXXFLAGS	=	$(CFLAGS)
+CFLAGS		=	-DPSL1GHT -O2 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
+CXXFLAGS	=	-fpermissive $(CFLAGS)
 
 LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 

@@ -15,7 +15,6 @@
 #include "clients/ftpclient.h"
 #include "util.h"
 #include "windows.h"
-#include "dbglogger.h"
 
 #define FTP_CLIENT_BUFSIZ 1048576
 #define ACCEPT_TIMEOUT 30
@@ -83,8 +82,6 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 		}
 	}
 
-	dbglogger_log("ip=%s, port=%d", ip, port);
-
 	int sControl;
 	in_addr dst_addr; /* destination address */
 	sockaddr_in server_addr;
@@ -117,11 +114,9 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 		return 0;
 	}
 
-	dbglogger_log("connect");
 	retval = connect(sControl, (sockaddr *)&server_addr, sizeof(server_addr));
 	if (retval == -1)
 	{
-		dbglogger_log("fail connect");
 		sprintf(mp_ftphandle->response, "%s", lang_strings[STR_FAIL_TIMEOUT_MSG]);
 		close(sControl);
 		return 0;
@@ -130,7 +125,6 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 
 	if (ReadResponse('2', mp_ftphandle) == 0)
 	{
-		dbglogger_log("resp=%s", LastResponse());
 		close(mp_ftphandle->handle);
 		mp_ftphandle->handle = 0;
 		return 0;
@@ -146,10 +140,8 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 		cmd = "USER anonymous";
 	}
 
-	dbglogger_log("FtpSendCmd user");
 	if (!FtpSendCmd(cmd, '3', mp_ftphandle))
 	{
-		dbglogger_log("resp=%s", LastResponse());
 		if (mp_ftphandle->ctrl != NULL)
 			return 1;
 		if (*LastResponse() == '2')
@@ -165,12 +157,10 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 		}
 	}
 
-	dbglogger_log("FtpSendCmd PASS");
 	cmd = "PASS " + pass;
 	int ret;
 	if ((ret = FtpSendCmd(cmd, '2', mp_ftphandle)))
 	{
-		dbglogger_log("resp=%s", LastResponse());
 		mp_ftphandle->is_connected = true;
 	}
 	else
@@ -221,7 +211,7 @@ int FtpClient::ReadResponse(char c, ftphandle *nControl)
 	{
 		return 0;
 	}
-	dbglogger_log("resp=%s", nControl->response);
+
 	if (nControl->response[3] == '-')
 	{
 		strncpy(match, nControl->response, 3);
@@ -1632,7 +1622,7 @@ std::vector<DirEntry> FtpClient::ListDir(const std::string &path)
 	if (nData != NULL)
 	{
 		ret = FtpRead(buf, 1024, nData);
-		dbglogger_log("buf=%s", buf);
+
 		while (ret > 0)
 		{
 			DirEntry entry;

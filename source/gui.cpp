@@ -5,7 +5,6 @@
 #include "windows.h"
 #include "gui.h"
 #include "imgui_impl_tiny3d.h"
-#include <dbglogger.h>
 
 bool done = false;
 int gui_mode = GUI_MODE_BROWSER;

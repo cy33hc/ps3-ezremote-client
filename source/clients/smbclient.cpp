@@ -15,7 +15,7 @@
 #include "clients/smbclient.h"
 #include "windows.h"
 #include "util.h"
-#include <dbglogger.h>
+//#include <dbglogger.h>
 
 SmbClient::SmbClient()
 {
@@ -29,7 +29,6 @@ int SmbClient::Connect(const std::string &url, const std::string &user, const st
 {
 	struct smb2_url *smb_url;
 
-	dbglogger_log("before smb2_init_contenxt");
 	smb2 = smb2_init_context();
 	if (smb2 == NULL)
 	{
@@ -37,7 +36,6 @@ int SmbClient::Connect(const std::string &url, const std::string &user, const st
 		return 0;
 	}
 
-	dbglogger_log("before smb2_parse_url");
 	smb_url = smb2_parse_url(smb2, url.c_str());
 	if (smb_url == NULL || smb_url->share == NULL || strlen(smb_url->share) == 0)
 	{
@@ -51,20 +49,17 @@ int SmbClient::Connect(const std::string &url, const std::string &user, const st
 	smb2_set_version(smb2, SMB2_VERSION_ANY);
 	smb2_set_timeout(smb2, 30);
 
-	dbglogger_log("before smb2_connect_share server=%s, share=%s", smb_url->server, smb_url->share);
 	if (smb2_connect_share(smb2, smb_url->server, smb_url->share, user.c_str()) < 0)
 	{
 		sprintf(response, "%s", smb2_get_error(smb2));
 		return 0;
 	}
 
-	dbglogger_log("before smb2_destroy_url");
 	smb2_destroy_url(smb_url);
 	//max_read_size = smb2_get_max_read_size(smb2);
 	//max_write_size = smb2_get_max_write_size(smb2);
 	connected = true;
 
-	dbglogger_log("return");
 	return 1;
 }
 

@@ -4,7 +4,6 @@
 #include <tiny3d.h>
 #include <io/pad.h>
 #include <sys/systime.h>
-#include <dbglogger.h>
 
 #define BUTTON_LEFT 0x00000010
 #define BUTTON_RIGHT 0x00000020

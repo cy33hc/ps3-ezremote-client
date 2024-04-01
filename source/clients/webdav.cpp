@@ -8,7 +8,6 @@
 #include "lang.h"
 #include "util.h"
 #include "windows.h"
-#include "dbglogger.h"
 
 static const char *months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
@@ -226,11 +225,9 @@ int WebDAVClient::Move(const std::string &from, const std::string &to)
 
     if (client->CustomRequest("MOVE", encode_url, headers, res))
     {
-        dbglogger_log("status=%d, errMessage=%s", res.iCode, res.errMessage.c_str());
         if (HTTP_SUCCESS(res.iCode))
             return 1;
     }
-    dbglogger_log("status=%d, errMessage=%s", res.iCode, res.errMessage.c_str());
 
     return 0;
 }

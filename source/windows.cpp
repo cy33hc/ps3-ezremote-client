@@ -14,7 +14,6 @@
 #include "windows.h"
 #include "IconsFontAwesome6.h"
 #include "OpenFontIcons.h"
-#include "dbglogger.h"
 
 #define MAX_IMAGE_HEIGHT 980
 #define MAX_IMAGE_WIDTH 1820
@@ -182,10 +181,10 @@ namespace Windows
         else
             files.push_back(selected_local_file);
 
-        if (strncmp(files.begin()->directory, "/data", 5) != 0 &&
-            strncmp(files.begin()->directory, "/mnt/usb", 8) != 0)
+        if (strncmp(files.begin()->directory, "/dev_hdd", 8) != 0 &&
+            strncmp(files.begin()->directory, "/dev_usb", 8) != 0)
         {
-            zipfolder = "/data";
+            zipfolder = "/dev_hdd0/tmp";
         }
         else
         {
@@ -241,11 +240,10 @@ namespace Windows
                 files.push_back(selected_remote_file);
         }
 
-        if (strncmp(local_directory, "/data", 5) != 0 &&
-            strncmp(local_directory, "/mnt/usb", 8) != 0 &&
-            strncmp(local_directory, "/user/data", 10) != 0)
+        if (strncmp(local_directory, "/dev_hdd", 8) != 0 &&
+            strncmp(local_directory, "/dev_usb", 8) != 0)
         {
-            zipfolder = "/data";
+            zipfolder = "/dev_hdd0/tmp";
         }
         else if (files.size() > 1)
         {
@@ -1018,29 +1016,30 @@ namespace Windows
             ImGui::PopID();
             ImGui::Separator();
 
-            ImGui::PushID("Extract##settings");
-            if (ImGui::Selectable(lang_strings[STR_EXTRACT], false, getSelectableFlag(REMOTE_ACTION_EXTRACT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
-            {
-                ResetImeCallbacks();
-                sprintf(extract_zip_folder, "%s", getExtractFolder().c_str());
-                ime_single_field = extract_zip_folder;
-                ime_field_size = 255;
-                ime_callback = SingleValueImeCallback;
-                if (local_browser_selected)
-                    ime_after_update = AfterExtractFolderCallback;
-                else
-                    ime_after_update = AfterExtractRemoteFolderCallback;
-                Dialog::initImeDialog(lang_strings[STR_EXTRACT_LOCATION], extract_zip_folder, 255, OSK_PANEL_TYPE_DEFAULT, 600, 350);
-                gui_mode = GUI_MODE_IME;
-                file_transfering = false;
-                SetModalMode(false);
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::PopID();
-            ImGui::Separator();
-
+            
             if (local_browser_selected)
             {
+                ImGui::PushID("Extract##settings");
+                if (ImGui::Selectable(lang_strings[STR_EXTRACT], false, getSelectableFlag(REMOTE_ACTION_EXTRACT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
+                {
+                    ResetImeCallbacks();
+                    sprintf(extract_zip_folder, "%s", getExtractFolder().c_str());
+                    ime_single_field = extract_zip_folder;
+                    ime_field_size = 255;
+                    ime_callback = SingleValueImeCallback;
+                    if (local_browser_selected)
+                        ime_after_update = AfterExtractFolderCallback;
+                    else
+                        ime_after_update = AfterExtractRemoteFolderCallback;
+                    Dialog::initImeDialog(lang_strings[STR_EXTRACT_LOCATION], extract_zip_folder, 255, OSK_PANEL_TYPE_DEFAULT, 600, 350);
+                    gui_mode = GUI_MODE_IME;
+                    file_transfering = false;
+                    SetModalMode(false);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::PopID();
+                ImGui::Separator();
+
                 ImGui::PushID("Compress##settings");
                 if (ImGui::Selectable(lang_strings[STR_COMPRESS], false, getSelectableFlag(REMOTE_ACTION_NONE) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {

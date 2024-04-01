@@ -1485,7 +1485,7 @@ namespace Windows
                     for (int n = 0; n < langs.size(); n++)
                     {
                         const bool is_selected = strcmp(langs[n].c_str(), language) == 0;
-                        if (ImGui::Selectable(langs[n].c_str(), is_selected))
+                        if (ImGui::Selectable(langs[n].c_str(), is_selected, ImGuiSelectableFlags_None, ImVec2(290, 0)))
                         {
                             sprintf(language, "%s", langs[n].c_str());
                         }

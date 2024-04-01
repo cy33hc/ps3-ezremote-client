@@ -14,6 +14,7 @@
 #include "windows.h"
 #include "IconsFontAwesome6.h"
 #include "OpenFontIcons.h"
+#include "dbglogger.h"
 
 #define MAX_IMAGE_HEIGHT 980
 #define MAX_IMAGE_WIDTH 1820
@@ -1380,13 +1381,13 @@ namespace Windows
                     if (ImGui::Selectable(it->c_str(), false, ImGuiSelectableFlags_DontClosePopups, ImVec2(760, 0)))
                     {
                         edit_line_num = j;
-                        snprintf(edit_line, 1023, "%s", it->c_str());
+                        snprintf(edit_line, 512, "%s", it->c_str());
                         ResetImeCallbacks();
                         ime_single_field = edit_line;
-                        ime_field_size = 1023;
+                        ime_field_size = 512;
                         ime_after_update = AfterEditorCallback;
                         ime_callback = SingleValueImeCallback;
-                        Dialog::initImeDialog(lang_strings[STR_EDIT], edit_line, 1023, OSK_PANEL_TYPE_DEFAULT, 420, 290);
+                        Dialog::initImeDialog(lang_strings[STR_EDIT], edit_line, 512, OSK_PANEL_TYPE_DEFAULT, 420, 290);
                         gui_mode = GUI_MODE_IME;
                     }
                     ImGui::PopStyleVar();
@@ -1419,12 +1420,14 @@ namespace Windows
                             editor_modified = true;
                             edit_line_to_select = j;
                         }
-                        else if (ImGui::IsKeyPressed(ImGuiKey_GamepadFaceLeft, false))
+                        else if (ImGui::IsKeyPressed(ImGuiKey_Keypad0, false))
                         {
                             copy_text = std::string(it->c_str());
+                            dbglogger_log("copy copy_test=%s", copy_text.c_str());
                         }
                         else if (ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp, false))
                         {
+                            dbglogger_log("paste copy_test=%s", copy_text.c_str());
                             it->clear();
                             it->append(copy_text);
                         }

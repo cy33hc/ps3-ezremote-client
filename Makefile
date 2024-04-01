@@ -7,6 +7,11 @@ ifeq ($(strip $(PSL1GHT)),)
 $(error "Please set PSL1GHT in your environment. export PSL1GHT=<path>")
 endif
 
+ifeq ($(DEBUG), 1)
+DEBUG_FLAGS      := -DDEBUG=1
+DEBUG_LIBS       := -ldbglogger
+endif
+
 #---------------------------------------------------------------------------------
 #  TITLE, APPID, CONTENTID, ICON0 SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
@@ -36,14 +41,14 @@ PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	  -ldbglogger -lzip -lunrar -lun7zip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
+LIBS		:=	 $(DEBUG_LIBS) -lzip -lunrar -lun7zip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
 
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	-DPSL1GHT -O2 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
+CFLAGS		=	$(DEBUG_FLAGS) -DPSL1GHT -O2 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	-fpermissive $(CFLAGS)
 
 LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map

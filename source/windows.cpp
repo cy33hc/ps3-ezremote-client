@@ -14,7 +14,6 @@
 #include "windows.h"
 #include "IconsFontAwesome6.h"
 #include "OpenFontIcons.h"
-#include "dbglogger.h"
 
 #define MAX_IMAGE_HEIGHT 980
 #define MAX_IMAGE_WIDTH 1820
@@ -1423,11 +1422,9 @@ namespace Windows
                         else if (ImGui::IsKeyPressed(ImGuiKey_Keypad0, false))
                         {
                             copy_text = std::string(it->c_str());
-                            dbglogger_log("copy copy_test=%s", copy_text.c_str());
                         }
                         else if (ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp, false))
                         {
-                            dbglogger_log("paste copy_test=%s", copy_text.c_str());
                             it->clear();
                             it->append(copy_text);
                         }

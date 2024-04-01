@@ -9,7 +9,9 @@
 #include <sysutil/sysutil.h>
 #include <sys/process.h>
 #include <net/net.h>
+#if defined(DEBUG)
 #include <dbglogger.h>
+#endif
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_tiny3d.h"
@@ -241,8 +243,10 @@ void InitImgui()
 
 int main()
 {
+#if defined(DEBUG)
 	dbglogger_init();
 	dbglogger_log("If you see this you've set up dbglogger correctly.");
+#endif
 
 	tiny3d_Init(1024 * 1024);
 	ioPadInit(7);
@@ -261,5 +265,7 @@ int main()
 	ImGui::DestroyContext();
 	netDeinitialize();
 	
+#if defined(DEBUG)
 	sysProcessExitSpawn2("/dev_hdd0/game/PSL145310/RELOAD.SELF", NULL, NULL, NULL, 0, 1001, SYS_PROCESS_SPAWN_STACK_SIZE_1M);
+#endif
 }

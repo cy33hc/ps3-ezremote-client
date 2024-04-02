@@ -631,7 +631,7 @@ namespace Actions
     int DownloadAndInstallPkg(const std::string &filename, PKGHeader *header)
     {
         char local_file[2000];
-        sprintf(local_file, "%s/%lu.pkg", temp_folder, header->content_id);
+        sprintf(local_file, "%s/%s.pkg", temp_folder, header->content_id);
 
         sprintf(activity_message, "%s %s to %s", lang_strings[STR_DOWNLOADING], filename.c_str(), local_file);
         remoteclient->Size(filename, &bytes_to_download);

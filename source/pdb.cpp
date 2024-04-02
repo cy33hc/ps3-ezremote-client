@@ -75,7 +75,6 @@ namespace PDB
 			}
 		}
 
-		LOG("task_id=%d", install_task_id);
 		return install_task_id;
 	}
 
@@ -86,7 +85,6 @@ namespace PDB
 		char szIconFile[256];
 
 		uint64_t pkg_size = BE64(header->pkg_size);
-		LOG("pkg_size=%d, title_id=%s", pkg_size, header->content_id);
 
 		snprintf(szIconFile, sizeof(szIconFile)-1, "%s/ICON_FILE", pkg_task_folder.c_str());
 
@@ -94,7 +92,6 @@ namespace PDB
 		FILE *fpPDB = FS::Create(temp_str);
 		if (!fpPDB)
 		{
-			LOG("Failed to create file %s", temp_str);
 			return 0;
 		}
 
@@ -137,7 +134,6 @@ namespace PDB
 		char temp_buffer[256];
 
 		uint64_t pkg_size = BE64(header->pkg_size);
-		LOG("pkg_size=%d, title_id=%s", pkg_size, header->content_id);
 
 		snprintf(temp_buffer, sizeof(temp_buffer), "%s/d0.pdb", pkg_task_folder.c_str());
 		fp1 = FS::Create(temp_buffer);
@@ -147,7 +143,6 @@ namespace PDB
 
 		if (!fp1 || !fp2)
 		{
-			LOG("Failed to create file %s", temp_buffer);
 			return 0;
 		}
 
@@ -163,7 +158,7 @@ namespace PDB
 		write_pdb_int64(fp2, PDB_HDR_SIZE, &pkg_size);
 
 		// 00000069 - Display title
-		snprintf(temp_buffer, sizeof(temp_buffer), "\xE2\x98\x85 %s \x22%s\x22", _("Install"), _(header->content_id));
+		snprintf(temp_buffer, sizeof(temp_buffer), "Install %s", header->content_id);
 		write_pdb_string(fp1, PDB_HDR_TITLE, temp_buffer);
 		write_pdb_string(fp2, PDB_HDR_TITLE, temp_buffer);
 
@@ -186,7 +181,7 @@ namespace PDB
 		fclose(fp1);
 		fclose(fp2);
 
-		snprintf(temp_buffer, sizeof(temp_buffer), "%s/%d/f0.pdb", PKG_INSTALL_FOLDER, install_task_id);
+		snprintf(temp_buffer, sizeof(temp_buffer), "%s/f0.pdb", pkg_task_folder);
 		FS::Save(temp_buffer, temp_buffer, 0);
 
 		return 1;

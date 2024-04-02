@@ -34,7 +34,6 @@ namespace INSTALLER
 			playstation_client = new BaseClient();
 			if (!playstation_client->Connect("http://tmdb.np.dl.playstation.net", "", ""))
 			{
-				LOG("Couldn't connect http://tmdb.np.dl.playstation.net");
 				return 0;
 			}
 		}
@@ -48,15 +47,14 @@ namespace INSTALLER
 				 ((uint64_t *)hmac)[0],
 				 ((uint64_t *)hmac)[1],
 				 ((uint32_t *)hmac)[4]);
-		LOG("ps download icon path=%s", download_path);
+
 		if (!playstation_client->FileExists(download_path))
 		{
-			LOG("download_path not exists");
 			return 0;
 		}
 
 		int ret = playstation_client->Get(icon_path, download_path);
-		LOG("after download");
+
 		return ret;
 	}
 
@@ -103,24 +101,17 @@ namespace INSTALLER
 		char queue_task_dir[256];
 		char temp_path[256];
 
-		LOG("before GetNextInstallTaskId");
 		uint32_t install_task_id = PDB::GetNextQueueTaskId();
 		snprintf(queue_task_dir, sizeof(queue_task_dir) - 1, "%s/%d", PKG_QUEUE_FOLDER, install_task_id);
-		LOG("after GetNextInstallTaskId, task_folder=%s", queue_task_dir);
 
-		LOG("before Mkdir");
 		FS::MkDirs(queue_task_dir);
-		LOG("after Mkdir");
 
 		snprintf(temp_path, 255, "%s/ICON_FILE", queue_task_dir);
-		LOG("before downloadicon icon_path=%s", temp_path);
 		if (!DownloadIcon(header, temp_path))
 		{
-			LOG("fail downloadicon icon_path=%s", temp_path);
 			FS::Save(temp_path, iconfile_data, iconfile_data_size);
 		}
 
-		LOG("before CreateInstallPDBFiles");
 		if (!PDB::CreateQueuePDBFiles(queue_task_dir, url, header))
 			return 0;
 
@@ -132,6 +123,7 @@ namespace INSTALLER
 		int ret;
 		char install_task_dir[256];
 		char temp_path[256];
+		char icon_file[256];
 
 		if (header->pkg_magic != PKG_MAGIC)
 			return 0;
@@ -141,11 +133,13 @@ namespace INSTALLER
 
 		FS::MkDirs(install_task_dir);
 
-		snprintf(temp_path, 255, "%s/ICON_FILE", install_task_dir);
+		snprintf(temp_path, 255, "%s/%s.png", TMP_FOLDER_PATH, header->content_id);
 		if (!DownloadIcon(header, temp_path))
 		{
 			FS::Save(temp_path, iconfile_data, iconfile_data_size);
 		}
+		snprintf(icon_file, sizeof(icon_file)-1, "%s/ICON_FILE", install_task_dir);
+		FS::Rename(temp_path, icon_file);
 
 		snprintf(temp_path, 255, "%s/%s.pkg", install_task_dir, header->content_id);
 		FS::Rename(path, temp_path);

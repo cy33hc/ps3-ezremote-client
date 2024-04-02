@@ -406,6 +406,27 @@ namespace Windows
                 gui_mode = GUI_MODE_IME;
             }
         }
+
+        /* if ((remote_settings->type == CLIENT_TYPE_HTTP_SERVER || remote_settings->type == CLIENT_TYPE_WEBDAV) && strlen(remote_settings->username)==0)
+        {
+            ImGui::SameLine();
+            ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_ENABLE_RPI]);
+            ImGui::SameLine();
+
+            if (ImGui::Checkbox("###enable_rpi", &remote_settings->enable_rpi))
+            {
+                CONFIG::SaveConfig();
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetNextWindowSize(ImVec2(200, 70));
+                ImGui::BeginTooltip();
+                ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 200);
+                ImGui::Text("%s", lang_strings[STR_ENABLE_RPI_FTP_SMB_MSG]);
+                ImGui::PopTextWrapPos();
+                ImGui::EndTooltip();
+            }
+        } */
         ImGui::PopStyleVar();
 
         ImGui::SameLine();
@@ -1094,6 +1115,16 @@ namespace Windows
                 }
                 ImGui::PopID();
                 ImGui::Separator();
+
+                ImGui::PushID("Install##remote");
+                if (ImGui::Selectable(lang_strings[STR_INSTALL], false, getSelectableFlag(REMOTE_ACTION_INSTALL) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
+                {
+                    SetModalMode(false);
+                    selected_action = ACTION_INSTALL_REMOTE_PKG;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::PopID();
+                ImGui::Separator();
             }
 
             ImGui::PushID("Properties##settings");
@@ -1640,7 +1671,7 @@ namespace Windows
                 EndGroupPanel();
 
                 if (saved_selected_browser & REMOTE_BROWSER ||
-                    (saved_selected_browser & LOCAL_BROWSER && (strncmp(selected_local_file.path, "/data/", 6) == 0 || strncmp(selected_local_file.path, "/mnt/usb", 8) == 0)))
+                    (saved_selected_browser & LOCAL_BROWSER))
                 {
                     ImGui::SetCursorPos(ImVec2(7, 420));
                     if (ImGui::Button(lang_strings[STR_INSTALL], ImVec2(400, 0)))

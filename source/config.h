@@ -24,6 +24,10 @@
 #define TMP_FOLDER_PATH DATA_PATH "/tmp"
 #define CACERT_FILE APP_FOLDER "/cacert.pem"
 
+#define PKG_RAP_FOLDER "/dev_hdd0/exdata"
+#define PKG_QUEUE_FOLDER "/dev_hdd0/vsh/task"
+#define PKG_INSTALL_FOLDER "/dev_hdd0/vsh/game_pkg"
+
 #define CONFIG_GLOBAL "Global"
 
 #define CONFIG_SHOW_HIDDEN_FILES "show_hidden_files"
@@ -35,6 +39,7 @@
 #define CONFIG_REMOTE_SERVER_HTTP_PORT "remote_server_http_port"
 #define CONFIG_REMOTE_HTTP_SERVER_TYPE "remote_server_http_server_type"
 #define CONFIG_REMOTE_DEFAULT_DIRECTORY "remote_server_default_directory"
+#define CONFIG_ENABLE_RPI "remote_server_enable_rpi"
 
 #define CONFIG_VERSION "config_version"
 #define CONFIG_VERSION_NUM 1
@@ -66,6 +71,7 @@ struct RemoteSettings
     uint32_t supported_actions;
     char http_server_type[24];
     char default_directory[256];
+    bool enable_rpi;
 };
 
 struct PackageUrlInfo

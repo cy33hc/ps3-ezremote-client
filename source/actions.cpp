@@ -20,6 +20,8 @@
 #include "windows.h"
 #include "util.h"
 #include "lang.h"
+#include "installer.h"
+#include "pkg_header.h"
 #include "actions.h"
 #include "zip_util.h"
 
@@ -626,9 +628,24 @@ namespace Actions
         }
     }
 
+    int DownloadAndInstallPkg(const std::string &filename, PKGHeader *header)
+    {
+        char local_file[2000];
+        sprintf(local_file, "%s/%lu.pkg", temp_folder, header->content_id);
+
+        sprintf(activity_message, "%s %s to %s", lang_strings[STR_DOWNLOADING], filename.c_str(), local_file);
+        remoteclient->Size(filename, &bytes_to_download);
+        bytes_transfered = 0;
+        file_transfering = true;
+        int ret = remoteclient->Get(local_file, filename);
+        if (ret == 0)
+            return 0;
+
+        return INSTALLER::InstallLocalPkg(local_file, header);
+    }
+
     void *InstallRemotePkgsThread(void *argp)
     {
-        /*
         int failed = 0;
         int success = 0;
         int skipped = 0;
@@ -652,7 +669,7 @@ namespace Actions
                 activity_inprogess = false;
                 while (confirm_state == CONFIRM_WAIT)
                 {
-                    sceKernelUsleep(100000);
+                    sysUsleep(100000);
                 }
                 activity_inprogess = true;
                 selected_action = action_to_take;
@@ -684,14 +701,14 @@ namespace Actions
                 path = Util::ToLower(path);
                 if (path.size() > 4 && path.substr(path.size() - 4) == ".pkg")
                 {
-                    pkg_header header;
+                    PKGHeader header;
                     memset(&header, 0, sizeof(header));
 
                     if (remoteclient->Head(it->path, (void *)&header, sizeof(header)) == 0)
                         failed++;
                     else
                     {
-                        if (BE32(header.pkg_magic) == PKG_MAGIC)
+                        if (header.pkg_magic == PKG_MAGIC)
                         {
                             if (download_and_install)
                             {
@@ -703,9 +720,8 @@ namespace Actions
                             else
                             {
                                 std::string url = INSTALLER::getRemoteUrl(it->path, true);
-                                std::string title = INSTALLER::GetRemotePkgTitle(remoteclient, it->path, &header);
 
-                                if (INSTALLER::InstallRemotePkg(url, &header, title, true) == 0)
+                                if (INSTALLER::InstallRemotePkg(url, &header) == 0)
                                     failed++;
                                 else
                                     success++;
@@ -714,37 +730,6 @@ namespace Actions
                         else
                             skipped++;
                     }
-                }
-                else if (Util::EndsWith(path,".zip") || Util::EndsWith(path,".rar") ||
-                        Util::EndsWith(path,".tar.xz") || Util::EndsWith(path,".tar.gz"))
-                {
-                    ArchiveEntry *entry = ZipUtil::GetPackageEntry(it->path, remoteclient);
-                    if (entry != nullptr)
-                    {
-                        while (entry != nullptr)
-                        {
-                            ArchivePkgInstallData *install_data = (ArchivePkgInstallData*) malloc(sizeof(ArchivePkgInstallData));
-                            memset(install_data, 0, sizeof(ArchivePkgInstallData));
-
-                            std::string install_pkg_path = std::string(temp_folder) + "/" + entry->filename;
-                            SplitFile *sp = new SplitFile(install_pkg_path, INSTALL_ARCHIVE_PKG_SPLIT_SIZE);
-                            
-                            install_data->archive_entry = entry;
-                            install_data->split_file = sp;
-                            install_data->stop_write_thread = false;
-
-                            int res = pthread_create(&install_data->thread, NULL, ExtractArchivePkg, install_data);
-
-                            INSTALLER::InstallArchivePkg(entry->filename, install_data);
-
-                            ArchiveEntry *previos = entry;
-                            entry = ZipUtil::GetNextPackageEntry(entry);
-                            free(previos);
-                        }
-                        success++;
-                    }
-                    else
-                        skipped++;
                 }
                 else
                     skipped++;
@@ -760,13 +745,12 @@ namespace Actions
         activity_inprogess = false;
         multi_selected_remote_files.clear();
         Windows::SetModalMode(false);
-        */
+
         return NULL;
     }
 
     void InstallRemotePkgs()
     {
-        /*
         sprintf(status_message, "%s", "");
         int res = pthread_create(&bk_activity_thid, NULL, InstallRemotePkgsThread, NULL);
         if (res != 0)
@@ -776,7 +760,6 @@ namespace Actions
             multi_selected_remote_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     void *ExtractArchivePkg(void *argp)
@@ -817,7 +800,6 @@ namespace Actions
 
     void *InstallLocalPkgsThread(void *argp)
     {
-        /*
         int failed = 0;
         int success = 0;
         int skipped = 0;
@@ -837,29 +819,30 @@ namespace Actions
 
             if (!it->isDir)
             {
-                std::string path = std::string(it->path);
-                path = Util::ToLower(path);
-                if (Util::EndsWith(path,".pkg"))
+                std::string lower_path = std::string(it->path);
+                lower_path = Util::ToLower(lower_path);
+                if (Util::EndsWith(lower_path,".pkg"))
                 {
-                    pkg_header header;
+                    PKGHeader header;
                     memset(&header, 0, sizeof(header));
                     if (FS::Head(it->path, (void *)&header, sizeof(header)) == 0)
                         failed++;
                     else
                     {
-                        if (BE32(header.pkg_magic) == PKG_MAGIC)
+                        LOG("pkg_magic=%X", LE32(header.pkg_magic));
+                        if (header.pkg_magic == PKG_MAGIC)
                         {
                             if ((ret = INSTALLER::InstallLocalPkg(it->path, &header)) <= 0)
                             {
                                 if (ret == -1)
                                 {
                                     sprintf(activity_message, "%s - %s", it->name, lang_strings[STR_INSTALL_FROM_DATA_MSG]);
-                                    sceKernelUsleep(3000000);
+                                    sysUsleep(3000000);
                                 }
                                 else if (ret == -2)
                                 {
                                     sprintf(activity_message, "%s - %s", it->name, lang_strings[STR_ALREADY_INSTALLED_MSG]);
-                                    sceKernelUsleep(3000000);
+                                    sysUsleep(3000000);
                                 }
                                 failed++;
                             }
@@ -869,37 +852,6 @@ namespace Actions
                         else
                             skipped++;
                     }
-                }
-                else if (Util::EndsWith(path,".zip") || Util::EndsWith(path,".rar") || Util::EndsWith(path,".7z") ||
-                         Util::EndsWith(path,".tar.xz") || Util::EndsWith(path,".tar.gz") || Util::EndsWith(path,".tar.bz2") )
-                {
-                    ArchiveEntry *entry = ZipUtil::GetPackageEntry(it->path);
-                    if (entry != nullptr)
-                    {
-                        while (entry != nullptr)
-                        {
-                            ArchivePkgInstallData *install_data = (ArchivePkgInstallData*) malloc(sizeof(ArchivePkgInstallData));
-                            memset(install_data, 0, sizeof(ArchivePkgInstallData));
-
-                            std::string install_pkg_path = std::string(temp_folder) + "/" + entry->filename;
-                            SplitFile *sp = new SplitFile(install_pkg_path, INSTALL_ARCHIVE_PKG_SPLIT_SIZE);
-                            
-                            install_data->archive_entry = entry;
-                            install_data->split_file = sp;
-                            install_data->stop_write_thread = false;
-
-                            int res = pthread_create(&install_data->thread, NULL, ExtractArchivePkg, install_data);
-
-                            INSTALLER::InstallArchivePkg(entry->filename, install_data);
-
-                            ArchiveEntry *previous = entry;
-                            entry = ZipUtil::GetNextPackageEntry(entry);
-                            free(previous);
-                        }
-                        success++;
-                    }
-                    else
-                        skipped++;
                 }
                 else
                     skipped++;
@@ -914,13 +866,12 @@ namespace Actions
         activity_inprogess = false;
         multi_selected_local_files.clear();
         Windows::SetModalMode(false);
-        */
+
         return NULL;
     }
 
     void InstallLocalPkgs()
     {
-        /*
         sprintf(status_message, "%s", "");
         int res = pthread_create(&bk_activity_thid, NULL, InstallLocalPkgsThread, NULL);
         if (res != 0)
@@ -929,7 +880,6 @@ namespace Actions
             multi_selected_local_files.clear();
             Windows::SetModalMode(false);
         }
-        */
     }
 
     void *ExtractZipThread(void *argp)

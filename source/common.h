@@ -7,6 +7,13 @@
 #include <lexbor/html/parser.h>
 #include <lexbor/dom/interfaces/element.h>
 
+#if defined(DEBUG)
+#include <dbglogger.h>
+#define LOG dbglogger_log
+#else
+#define LOG(...)
+#endif
+
 #define HTTP_SUCCESS(x) (x >= 200 && x < 300)
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))

@@ -4,3 +4,4 @@ _deps
 build
 .vscode
 *.pkg
+*.elf.map

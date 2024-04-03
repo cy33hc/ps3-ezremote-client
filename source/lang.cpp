@@ -125,9 +125,8 @@ char lang_strings[LANG_STRINGS_NUM][LANG_STR_SIZE] = {
 	"Remote HTTP Server not reachable.",															  // STR_CANNOT_CONNECT_REMOTE_MSG
 	"Remote Package Install not possible. Would you like to download package and install?",			  // STR_DOWNLOAD_INSTALL_MSG
 	"Checking remote server for Remote Package Install.",											  // STR_CHECKING_REMOTE_SERVER_MSG
-	"RPI",																							  // STR_ENABLE_RPI
-	"This option enables Remote Package Installation.",												  // STR_ENABLE_RPI_FTP_SMB_MSG
-	"This option enables Remote Package Installation.",												  // STR_ENABLE_RPI_WEBDAV_MSG
+	"BD",																							  // STR_ENABLE_BD
+	"This option enables Backgroud Download. Only for HTTP and WebDAV server that does not require login.",	// STR_ENABLE_BD_MSG
 	"Files",																						  // STR_FILES
 	"Editor",																						  // STR_EDITOR
 	"Save",																							  // STR_SAVE

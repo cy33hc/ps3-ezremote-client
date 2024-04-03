@@ -382,6 +382,7 @@ namespace Windows
                 ResetImeCallbacks();
                 ime_field_size = 32;
                 ime_callback = SingleValueImeCallback;
+                ime_after_update = AfterUsernameCallback;
                 Dialog::initImeDialog(lang_strings[STR_USERNAME], remote_settings->username, 32, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
                 gui_mode = GUI_MODE_IME;
             }
@@ -407,13 +408,13 @@ namespace Windows
             }
         }
 
-        /* if ((remote_settings->type == CLIENT_TYPE_HTTP_SERVER || remote_settings->type == CLIENT_TYPE_WEBDAV) && strlen(remote_settings->username)==0)
+        if ((remote_settings->type == CLIENT_TYPE_HTTP_SERVER || remote_settings->type == CLIENT_TYPE_WEBDAV) && strlen(remote_settings->username)==0)
         {
             ImGui::SameLine();
-            ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_ENABLE_RPI]);
+            ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s:", lang_strings[STR_ENABLE_BD]);
             ImGui::SameLine();
 
-            if (ImGui::Checkbox("###enable_rpi", &remote_settings->enable_rpi))
+            if (ImGui::Checkbox("###enable_bd", &remote_settings->enable_bd))
             {
                 CONFIG::SaveConfig();
             }
@@ -422,11 +423,11 @@ namespace Windows
                 ImGui::SetNextWindowSize(ImVec2(200, 70));
                 ImGui::BeginTooltip();
                 ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 200);
-                ImGui::Text("%s", lang_strings[STR_ENABLE_RPI_FTP_SMB_MSG]);
+                ImGui::Text("%s", lang_strings[STR_ENABLE_BD_MSG]);
                 ImGui::PopTextWrapPos();
                 ImGui::EndTooltip();
             }
-        } */
+        }
         ImGui::PopStyleVar();
 
         ImGui::SameLine();
@@ -921,7 +922,7 @@ namespace Windows
                 ImGui::BeginTooltip();
                 int text_width = ImGui::CalcTextSize(lang_strings[STR_FILES]).x;
                 int file_pos = ImGui::GetCursorPosX() + text_width + 15;
-                ImGui::Text("%s: %s", lang_strings[STR_TYPE], (paste_action == ACTION_LOCAL_CUT | paste_action == ACTION_REMOTE_CUT) ? lang_strings[STR_CUT] : lang_strings[STR_COPY]);
+                ImGui::Text("%s: %s", lang_strings[STR_TYPE], (paste_action == ACTION_LOCAL_CUT || paste_action == ACTION_REMOTE_CUT) ? lang_strings[STR_CUT] : lang_strings[STR_COPY]);
                 ImGui::Text("%s:", lang_strings[STR_FILES]);
                 ImGui::SameLine();
                 std::vector<DirEntry> files = (local_browser_selected) ? local_paste_files : remote_paste_files;
@@ -2045,8 +2046,8 @@ namespace Windows
             Textures::LoadImageFile(TMP_ICON_PATH, &texture);
             sfo = FS::Load(TMP_SFO_PATH);
             sfo_params = SFO::GetParams(sfo.data(), sfo.size());
-            show_pkg_info = true;
-            selected_action = ACTION_NONE; */
+            show_pkg_info = true; */
+            selected_action = ACTION_NONE;
             break;
         case ACTION_VIEW_REMOTE_PKG:
             /* if (INSTALLER::ExtractRemotePkg(selected_remote_file.path, TMP_SFO_PATH, TMP_ICON_PATH))
@@ -2231,6 +2232,17 @@ namespace Windows
             std::string str = std::string(edit_line);
             edit_buffer[edit_line_num] = str;
             editor_modified = true;
+        }
+    }
+
+    void AfterUsernameCallback(int ime_result)
+    {
+        if (ime_result == IME_DIALOG_RESULT_FINISHED)
+        {
+            if (strlen(remote_settings->username) != 0)
+            {
+                remote_settings->enable_bd = false;
+            }
         }
     }
 }

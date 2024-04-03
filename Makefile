@@ -18,6 +18,8 @@ endif
 TITLE		:=	ezRemote Client
 APPID		:=	RMTC00001
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
+ICON0		:=	pkgfiles/ICON0.PNG
+SFOXML		:=	sfo.xml
 
 include $(PSL1GHT)/ppu_rules
 
@@ -36,19 +38,19 @@ SOURCES		:=	source source/imgui source/clients source/pugixml
 DATA		:=	data
 SHADERS		:=	shaders
 INCLUDES	:=	source source/imgui source/clients source/pugixml
-PKG_DIR     :=  $(BUILDDIR)/pkg/USRDIR
+PKGFILES    :=  pkgfiles
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	 $(DEBUG_LIBS) -lmini18n -lzip -lunrar -lun7zip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
+LIBS		:=	 $(DEBUG_LIBS) -lzip -lunrar -lun7zip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
 
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	$(DEBUG_FLAGS) -DPSL1GHT -O2 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
+CFLAGS		=	$(DEBUG_FLAGS) -Wno-unused-variable -Wno-unused-function -DPSL1GHT -O2 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	-fpermissive $(CFLAGS)
 
 LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
@@ -132,7 +134,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).fake.self $(OUTPUT).self EBOOT.BIN
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).fake.self $(OUTPUT).self EBOOT.BIN $(OUTPUT).pkg $(OUTPUT).gnpdrm.pkg
 
 #---------------------------------------------------------------------------------
 run:
@@ -145,7 +147,7 @@ prep:
 	@cp -R $(DATA)/* $(PKG_DIR)
 
 #---------------------------------------------------------------------------------
-pkg:	$(BUILD) prep $(OUTPUT).pkg
+pkg:	$(BUILD) $(OUTPUT).pkg
 
 #---------------------------------------------------------------------------------
 

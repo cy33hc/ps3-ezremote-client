@@ -72,6 +72,36 @@ namespace Util
         *dst = '\0';
     }
 
+    static inline uint16_t LE16(const uint8_t *bytes)
+    {
+        return (bytes[0]) | (bytes[1] << 8);
+    }
+
+    static inline uint32_t LE32(const uint8_t *bytes)
+    {
+        return (bytes[0]) | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+    }
+
+    static inline uint64_t LE64(const uint8_t *bytes)
+    {
+        return (uint64_t)bytes[0] | ((uint64_t)bytes[1] << 8) | ((uint64_t)bytes[2] << 16) | ((uint64_t)bytes[3] << 24) | ((uint64_t)bytes[4] << 32) | ((uint64_t)bytes[5] << 40) | ((uint64_t)bytes[6] << 48) | ((uint64_t)bytes[7] << 56);
+    }
+
+    static inline uint16_t BE16(const uint8_t *bytes)
+    {
+        return (bytes[1]) | (bytes[0] << 8);
+    }
+
+    static inline uint32_t BE32(const uint8_t *bytes)
+    {
+        return (bytes[3]) | (bytes[2] << 8) | (bytes[1] << 16) | (bytes[0] << 24);
+    }
+
+    static inline uint64_t BE64(const uint8_t *bytes)
+    {
+        return (uint64_t)bytes[7] | ((uint64_t)bytes[6] << 8) | ((uint64_t)bytes[5] << 16) | ((uint64_t)bytes[4] << 24) | ((uint64_t)bytes[3] << 32) | ((uint64_t)bytes[2] << 40) | ((uint64_t)bytes[1] << 48) | ((uint64_t)bytes[0] << 56);
+    }
+
     static inline std::string &Ltrim(std::string &str, std::string chars)
     {
         str.erase(0, str.find_first_not_of(chars));

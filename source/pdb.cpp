@@ -5,7 +5,7 @@
 #include "fs.h"
 #include "pdb_data.h"
 #include "pkg_header.h"
-#include <mini18n.h>
+#include "util.h"
 
 static uint32_t queue_task_id = 10000002;
 static uint32_t install_task_id = 80000002;
@@ -16,7 +16,6 @@ namespace PDB
 	{
 		unsigned int pdbstr_len = strlen(pdbstr) + 1;
 
-		FS::Write(fp, header, 4);
 		FS::Write(fp, header, 4);
 		FS::Write(fp, &pdbstr_len, 4);
 		FS::Write(fp, &pdbstr_len, 4);
@@ -84,7 +83,7 @@ namespace PDB
 		char temp_str[256];
 		char szIconFile[256];
 
-		uint64_t pkg_size = BE64(header->pkg_size);
+		uint64_t pkg_size = Util::BE64((uint8_t*)&header->pkg_size);
 
 		snprintf(szIconFile, sizeof(szIconFile)-1, "%s/ICON_FILE", pkg_task_folder.c_str());
 
@@ -115,7 +114,7 @@ namespace PDB
 		write_pdb_string(fpPDB, PDB_HDR_ICON, szIconFile);
 
 		// 00000069 - Display title
-		snprintf(temp_str, sizeof(temp_str)-1, "\xE2\x98\x85 %s \x22%s\x22", _("Download"), _(header->content_id));
+		snprintf(temp_str, sizeof(temp_str)-1, "\xE2\x98\x85 %s \x22%s\x22", lang_strings[STR_DOWNLOAD], header->content_id);
 		write_pdb_string(fpPDB, PDB_HDR_TITLE, temp_str);
 
 		// 000000D9 - Content id
@@ -133,7 +132,7 @@ namespace PDB
 		FILE *fp2;
 		char temp_buffer[256];
 
-		uint64_t pkg_size = BE64(header->pkg_size);
+		uint64_t pkg_size = Util::BE64((uint8_t*)&header->pkg_size);
 
 		snprintf(temp_buffer, sizeof(temp_buffer), "%s/d0.pdb", pkg_task_folder.c_str());
 		fp1 = FS::Create(temp_buffer);
@@ -158,17 +157,17 @@ namespace PDB
 		write_pdb_int64(fp2, PDB_HDR_SIZE, &pkg_size);
 
 		// 00000069 - Display title
-		snprintf(temp_buffer, sizeof(temp_buffer), "Install %s", header->content_id);
+		snprintf(temp_buffer, sizeof(temp_buffer)-1, "\xE2\x98\x85 %s \x22%s\x22", lang_strings[STR_INSTALL], header->content_id);
 		write_pdb_string(fp1, PDB_HDR_TITLE, temp_buffer);
 		write_pdb_string(fp2, PDB_HDR_TITLE, temp_buffer);
 
 		// 000000CB - PKG file name
-		snprintf(temp_buffer, sizeof(temp_buffer), "%s.pkg", header->content_id);
+		snprintf(temp_buffer, sizeof(temp_buffer)-1, "%s.pkg", header->content_id);
 		write_pdb_string(fp1, PDB_HDR_FILENAME, temp_buffer);
 		write_pdb_string(fp2, PDB_HDR_FILENAME, temp_buffer);
 
 		// 00000000 - Icon location / path (PNG w/o extension)
-		snprintf(temp_buffer, sizeof(temp_buffer), "%s/ICON_FILE", pkg_task_folder.c_str());
+		snprintf(temp_buffer, sizeof(temp_buffer)-1, "%s/ICON_FILE", pkg_task_folder.c_str());
 		write_pdb_string(fp2, PDB_HDR_UNUSED, temp_buffer);
 
 		// 0000006A - Icon location / path (PNG w/o extension)
@@ -181,7 +180,7 @@ namespace PDB
 		fclose(fp1);
 		fclose(fp2);
 
-		snprintf(temp_buffer, sizeof(temp_buffer), "%s/f0.pdb", pkg_task_folder);
+		snprintf(temp_buffer, sizeof(temp_buffer), "%s/f0.pdb", pkg_task_folder.c_str());
 		FS::Save(temp_buffer, temp_buffer, 0);
 
 		return 1;

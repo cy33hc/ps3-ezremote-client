@@ -15,4 +15,7 @@ int openssl_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char
 
 #ifdef __cplusplus
 }
+
+int rap2rif(const uint8_t* rap, const char* content_id, const char *exdata_path);
+
 #endif

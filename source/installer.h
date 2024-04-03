@@ -9,6 +9,7 @@ namespace INSTALLER
     std::string getRemoteUrl(const std::string path, bool encodeUrl = false);
     int InstallRemotePkg(const std::string &path, PKGHeader *header);
     int InstallLocalPkg(const std::string &path, PKGHeader *header);
+    int DownloadRapOrRif(const std::string &pkg_dir, PKGHeader *header);
 }
 
 #endif

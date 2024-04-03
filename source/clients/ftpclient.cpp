@@ -326,6 +326,7 @@ bool FtpClient::IsConnected()
 {
 	if (mp_ftphandle)
 		return mp_ftphandle->is_connected;
+	return false;
 }
 
 void FtpClient::ClearHandle()
@@ -536,7 +537,7 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 	if (mp_ftphandle->offset != 0)
 	{
 		char buf[512];
-		sprintf(buf, "REST %lld", mp_ftphandle->offset);
+		sprintf(buf, "REST %ld", mp_ftphandle->offset);
 		if (!FtpSendCmd(buf, '3', nControl))
 			return 0;
 	}
@@ -708,7 +709,7 @@ int FtpClient::FtpOpenPort(ftphandle *nControl, ftphandle **nData, transfermode 
 	if (mp_ftphandle->offset != 0)
 	{
 		char buf[512];
-		sprintf(buf, "REST %lld", mp_ftphandle->offset);
+		sprintf(buf, "REST %ld", mp_ftphandle->offset);
 		if (!FtpSendCmd(buf, '3', nControl))
 		{
 			close(sData);

@@ -641,6 +641,9 @@ namespace Actions
         if (ret == 0)
             return 0;
 
+        std::string pkg_folder = filename.substr(0, filename.find_last_of("/"));
+        INSTALLER::DownloadRapOrRif(pkg_folder, header);
+        
         return INSTALLER::InstallLocalPkg(local_file, header);
     }
 
@@ -657,7 +660,7 @@ namespace Actions
             files.push_back(selected_remote_file);
 
         bool download_and_install = false;
-        if (remote_settings->enable_rpi)
+        if (remote_settings->enable_bd)
         {
             std::string url = INSTALLER::getRemoteUrl(files.begin()->path);
             sprintf(activity_message, "%s", lang_strings[STR_CHECKING_REMOTE_SERVER_MSG]);
@@ -829,7 +832,6 @@ namespace Actions
                         failed++;
                     else
                     {
-                        LOG("pkg_magic=%X", LE32(header.pkg_magic));
                         if (header.pkg_magic == PKG_MAGIC)
                         {
                             if ((ret = INSTALLER::InstallLocalPkg(it->path, &header)) <= 0)

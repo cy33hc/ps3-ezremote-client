@@ -67,7 +67,6 @@ namespace Windows
     {
         ImGui::BeginGroup();
 
-        auto cursorPos = ImGui::GetCursorScreenPos();
         auto itemSpacing = ImGui::GetStyle().ItemSpacing;
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
@@ -209,6 +208,7 @@ namespace Windows
     void AferServerChangeCallback(int ime_result);
     void AfterHttpPortChangeCallback(int ime_result);
     void AfterEditorCallback(int ime_result);
+    void AfterUsernameCallback(int ime_result);
 }
 
 #endif

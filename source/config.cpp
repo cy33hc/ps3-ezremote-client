@@ -194,8 +194,8 @@ namespace CONFIG
             }
             WriteString(sites[i].c_str(), CONFIG_REMOTE_SERVER_PASSWORD, encrypted_password.c_str());
 
-            /* setting.enable_rpi = ReadBool(sites[i].c_str(), CONFIG_ENABLE_RPI, false);
-            WriteBool(sites[i].c_str(), CONFIG_ENABLE_RPI, setting.enable_rpi); */
+            setting.enable_bd = ReadBool(sites[i].c_str(), CONFIG_ENABLE_BACKGROUND_DOWNLOAD, false);
+            WriteBool(sites[i].c_str(), CONFIG_ENABLE_BACKGROUND_DOWNLOAD, setting.enable_bd);
 
             sprintf(setting.http_server_type, "%s", ReadString(sites[i].c_str(), CONFIG_REMOTE_HTTP_SERVER_TYPE, HTTP_SERVER_APACHE));
             WriteString(sites[i].c_str(), CONFIG_REMOTE_HTTP_SERVER_TYPE, setting.http_server_type);
@@ -231,7 +231,7 @@ namespace CONFIG
         WriteString(last_site, CONFIG_REMOTE_SERVER_PASSWORD, remote_settings->password);
         WriteString(last_site, CONFIG_REMOTE_HTTP_SERVER_TYPE, remote_settings->http_server_type);
         WriteString(last_site, CONFIG_REMOTE_DEFAULT_DIRECTORY, remote_settings->default_directory);
-        /* WriteBool(last_site, CONFIG_ENABLE_RPI, remote_settings->enable_rpi); */
+        WriteBool(last_site, CONFIG_ENABLE_BACKGROUND_DOWNLOAD, remote_settings->enable_bd);
         WriteString(CONFIG_GLOBAL, CONFIG_LAST_SITE, last_site);
                
         WriteIniFile(CONFIG_INI_FILE);

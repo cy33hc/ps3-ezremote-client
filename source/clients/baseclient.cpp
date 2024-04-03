@@ -93,7 +93,7 @@ int BaseClient::Get(const std::string &outputfile, const std::string &path, uint
     bytes_transfered = 0;
     if (!Size(path, &bytes_to_download))
     {
-        sprintf(this->response, "%s", STR_FAIL_DOWNLOAD_MSG);
+        sprintf(this->response, "%s", lang_strings[STR_FAIL_DOWNLOAD_MSG]);
         return 0;
     }
 
@@ -105,7 +105,7 @@ int BaseClient::Get(const std::string &outputfile, const std::string &path, uint
     }
     else
     {
-        sprintf(this->response, "%ld - %s", status, STR_FAIL_DOWNLOAD_MSG);
+        sprintf(this->response, "%ld - %s", status, lang_strings[STR_FAIL_DOWNLOAD_MSG]);
     }
     return 0;
 }

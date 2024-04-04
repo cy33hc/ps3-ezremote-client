@@ -150,3 +150,7 @@ Czech
 Vietnamese
 ```
 or any other language that you have a traslation for.
+
+## Credits
+Used some of the source code from PKGi-PS3 for creating install bubbles. https://github.com/bucanero/pkgi-ps3
+@bucanero 

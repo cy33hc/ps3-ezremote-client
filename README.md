@@ -98,6 +98,9 @@ L1 - Navigate to the Local list of files
 Start Button - Exit Application
 ```
 
+## Known Issues
+- UI gitches, but doesn't affect functionality.
+
 ## Multi Language Support
 The appplication support following languages.
 

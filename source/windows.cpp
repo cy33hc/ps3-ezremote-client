@@ -1518,7 +1518,8 @@ namespace Windows
                     for (int n = 0; n < langs.size(); n++)
                     {
                         const bool is_selected = strcmp(langs[n].c_str(), language) == 0;
-                        if (ImGui::Selectable(langs[n].c_str(), is_selected, ImGuiSelectableFlags_None, ImVec2(290, 0)))
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX()+3);
+                        if (ImGui::Selectable(langs[n].c_str(), is_selected, ImGuiSelectableFlags_None, ImVec2(270, 0)))
                         {
                             sprintf(language, "%s", langs[n].c_str());
                         }
@@ -1546,7 +1547,8 @@ namespace Windows
                     for (std::map<std::string, PS3Account>::iterator it = ps3_accounts.begin(); it != ps3_accounts.end(); it++)
                     {
                         const bool is_selected = strcmp(account_str, it->second.username) == 0;
-                        if (ImGui::Selectable(it->second.username, is_selected, ImGuiSelectableFlags_None, ImVec2(290, 0)))
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX()+3);
+                        if (ImGui::Selectable(it->second.username, is_selected, ImGuiSelectableFlags_None, ImVec2(270, 0)))
                         {
                             selected_ps3account = &it->second;
                         }

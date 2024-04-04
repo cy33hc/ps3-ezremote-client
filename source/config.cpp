@@ -60,8 +60,15 @@ namespace CONFIG
                     snprintf(account.account_id, sizeof(account.account_id)-1, "%s", it->name);
                     snprintf(account.home_dir, sizeof(account.home_dir)-1, "/dev_hdd0/home/%s", it->name);
                     snprintf(path, sizeof(path) - 1, "%s%s%s", "/dev_hdd0/home/", it->name, "/localusername");
-                    std::vector<char> local_username = FS::Load(path);
-                    snprintf(account.username, sizeof(account.username) - 1, "%s", local_username.data());
+                    if (FS::FileExists(path))
+                    {
+                        std::vector<char> local_username = FS::Load(path);
+                        snprintf(account.username, sizeof(account.username) - 1, "%s", local_username.data());
+                    }
+                    else
+                    {
+                        snprintf(account.username, sizeof(account.username) - 1, "%s", it->name);
+                    }
 
                     ps3_accounts.insert(std::make_pair(std::string(account.username), account));
 				}

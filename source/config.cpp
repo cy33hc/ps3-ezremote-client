@@ -33,6 +33,8 @@ PackageUrlInfo install_pkg_url;
 int max_edit_file_size;
 bool show_hidden_files;
 char temp_folder[256];
+std::map<std::string, PS3Account> ps3_accounts;
+PS3Account *selected_ps3account;
 
 unsigned char cipher_key[32] = {'s', '5', 'v', '8', 'y', '/', 'B', '?', 'E', '(', 'H', '+', 'M', 'b', 'Q', 'e', 'T', 'h', 'W', 'm', 'Z', 'q', '4', 't', '7', 'w', '9', 'z', '$', 'C', '&', 'F'};
 unsigned char cipher_iv[16] = {'Y', 'p', '3', 's', '6', 'v', '9', 'y', '$', 'B', '&', 'E', ')', 'H', '@', 'M'};
@@ -41,6 +43,32 @@ RemoteClient *remoteclient;
 
 namespace CONFIG
 {
+    void GetPS3ActivatedAccounts()
+    {
+        int ret;
+        char path[256];
+
+        std::vector<DirEntry> home_list = FS::ListDir("/dev_hdd0/home", &ret);
+        for(std::vector<DirEntry>::iterator it = home_list.begin(); it != home_list.end(); it++)
+		{
+			if (strcmp(it->name, ".") != 0 && strcmp(it->name, "..") != 0)
+			{
+				snprintf(path, sizeof(path) - 1, "%s%s%s", "/dev_hdd0/home/", it->name, "/exdata/act.dat");
+				if (FS::FileExists(path))
+				{
+					PS3Account account;
+                    snprintf(account.account_id, sizeof(account.account_id)-1, "%s", it->name);
+                    snprintf(account.home_dir, sizeof(account.home_dir)-1, "/dev_hdd0/home/%s", it->name);
+                    snprintf(path, sizeof(path) - 1, "%s%s%s", "/dev_hdd0/home/", it->name, "/localusername");
+                    std::vector<char> local_username = FS::Load(path);
+                    snprintf(account.username, sizeof(account.username) - 1, "%s", local_username.data());
+
+                    ps3_accounts.insert(std::make_pair(std::string(account.username), account));
+				}
+			}
+		}
+    }
+
     int Encrypt(const std::string &text, std::string &encrypt_text)
     {
         unsigned char tmp_encrypt_text[text.length() * 2];
@@ -115,6 +143,8 @@ namespace CONFIG
             FS::MkDirs(DATA_PATH);
         }
 
+        GetPS3ActivatedAccounts();
+
         sites = {"Site 1", "Site 2", "Site 3", "Site 4", "Site 5", "Site 6", "Site 7", "Site 8", "Site 9", "Site 10",
                  "Site 11", "Site 12", "Site 13", "Site 14", "Site 15", "Site 16", "Site 17", "Site 18", "Site 19", "Site 20"};
 
@@ -155,6 +185,32 @@ namespace CONFIG
         if (!FS::FolderExists(temp_folder))
         {
             FS::MkDirs(temp_folder);
+        }
+
+        char temp_account_id[12];
+        snprintf(temp_account_id, 11, "%s", ReadString(CONFIG_GLOBAL, CONFIG_PS3_ACCOUNT, ""));
+        selected_ps3account = nullptr;
+        if (strlen(temp_account_id) == 0)
+        {
+            if (ps3_accounts.size() > 0)
+            {
+                // select the first ps3 account by default if none is selected
+                selected_ps3account = &ps3_accounts.begin()->second;
+                WriteString(CONFIG_GLOBAL, CONFIG_PS3_ACCOUNT, selected_ps3account->account_id);
+            }
+        }
+        else
+        {
+            if (ps3_accounts.size() > 0)
+            {
+                for (std::map<std::string, PS3Account>::iterator it = ps3_accounts.begin(); it != ps3_accounts.end(); it++)
+                {
+                    if (strcmp(temp_account_id, it->second.account_id) == 0)
+                    {
+                        selected_ps3account = &it->second;
+                    }
+                }
+            }
         }
 
         //sprintf(compressed_file_path, "%s", ReadString(CONFIG_HTTP_SERVER, CONFIG_HTTP_SERVER_COMPRESSED_FILE_PATH, CONFIG_DEFAULT_COMPRESSED_FILE_PATH));
@@ -245,6 +301,8 @@ namespace CONFIG
         WriteString(CONFIG_GLOBAL, CONFIG_TMP_FOLDER_PATH, temp_folder);
         WriteBool(CONFIG_GLOBAL, CONFIG_SHOW_HIDDEN_FILES, show_hidden_files);
         WriteString(CONFIG_GLOBAL, CONFIG_LANGUAGE, language);
+        if (selected_ps3account != nullptr)
+            WriteString(CONFIG_GLOBAL, CONFIG_PS3_ACCOUNT, selected_ps3account->account_id);
         //WriteString(CONFIG_HTTP_SERVER, CONFIG_HTTP_SERVER_COMPRESSED_FILE_PATH, compressed_file_path);
 
         WriteIniFile(CONFIG_INI_FILE);

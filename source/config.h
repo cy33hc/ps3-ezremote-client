@@ -31,6 +31,7 @@
 #define CONFIG_GLOBAL "Global"
 
 #define CONFIG_SHOW_HIDDEN_FILES "show_hidden_files"
+#define CONFIG_PS3_ACCOUNT "ps3_account"
 
 #define CONFIG_REMOTE_SERVER_NAME "remote_server_name"
 #define CONFIG_REMOTE_SERVER_URL "remote_server_url"
@@ -81,6 +82,13 @@ struct PackageUrlInfo
     char password[25];
 };
 
+struct PS3Account
+{
+    char account_id[12];
+    char username[128];
+    char home_dir[64];
+};
+
 extern std::vector<std::string> sites;
 extern std::vector<std::string> http_servers;
 extern std::set<std::string> text_file_extensions;
@@ -102,6 +110,8 @@ extern unsigned char cipher_iv[16];
 extern bool show_hidden_files;
 extern char temp_folder[256];
 extern bool show_hidden_files;
+extern std::map<std::string, PS3Account> ps3_accounts;
+extern PS3Account *selected_ps3account;
 
 namespace CONFIG
 {

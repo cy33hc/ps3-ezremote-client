@@ -1504,14 +1504,15 @@ namespace Windows
                 char id[192];
                 ImVec2 field_size;
                 float width;
+                float posX = ImGui::GetCursorPosX();
 
                 ImGui::TextColored(colors[ImGuiCol_ButtonHovered], "%s", lang_strings[STR_GLOBAL]);
                 ImGui::Separator();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+                ImGui::SetCursorPosX(posX + 5);
                 ImGui::Text("%s", lang_strings[STR_LANGUAGE]);
                 ImGui::SameLine();
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
-                ImGui::SetNextItemWidth(300);
+                ImGui::SetCursorPosX(posX + 100);
+                ImGui::SetNextItemWidth(285);
                 if (ImGui::BeginCombo("##Language", language, ImGuiComboFlags_PopupAlignLeft | ImGuiComboFlags_HeightLargest))
                 {
                     for (int n = 0; n < langs.size(); n++)
@@ -1528,24 +1529,57 @@ namespace Windows
                     }
                     ImGui::EndCombo();
                 }
-                ImGui::Separator();
 
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+                ImGui::Separator();
+                ImGui::SetCursorPosX(posX + 5);
+                ImGui::Text("%s", lang_strings[STR_ACCOUNT]);
+                ImGui::SameLine();
+                ImGui::SetCursorPosX(posX + 100);
+                ImGui::SetNextItemWidth(285);
+                static char account_str[128];
+                if (selected_ps3account != nullptr)
+                    snprintf(account_str, 127, "%s", selected_ps3account->username);
+                else
+                    sprintf(account_str, "%s", "");
+                if (ImGui::BeginCombo("##ps3_account", account_str, ImGuiComboFlags_PopupAlignLeft | ImGuiComboFlags_HeightRegular))
+                {
+                    for (std::map<std::string, PS3Account>::iterator it = ps3_accounts.begin(); it != ps3_accounts.end(); it++)
+                    {
+                        const bool is_selected = strcmp(account_str, it->second.username) == 0;
+                        if (ImGui::Selectable(it->second.username, is_selected, ImGuiSelectableFlags_None, ImVec2(290, 0)))
+                        {
+                            selected_ps3account = &it->second;
+                        }
+
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::BeginTooltip();
+                    ImGui::Text("%s", lang_strings[STR_ACCOUNT_TIP]);
+                    ImGui::EndTooltip();
+                }
+
+                ImGui::Separator();
+                ImGui::SetCursorPosX(posX + 5);
                 ImGui::Text("%s", lang_strings[STR_SHOW_HIDDEN_FILES]);
                 ImGui::SameLine();
                 ImGui::SetCursorPosX(375);
                 ImGui::Checkbox("##show_hidden_files", &show_hidden_files);
                 ImGui::Separator();
 
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+                ImGui::SetCursorPosX(posX + 5);
                 ImGui::Text("%s", lang_strings[STR_TEMP_DIRECTORY]);
                 ImGui::SameLine();
                 field_size = ImGui::CalcTextSize(lang_strings[STR_TEMP_DIRECTORY]);
                 width = field_size.x + 45;
                 sprintf(id, "%s##temp_direcotry", temp_folder);
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 15);
+                ImGui::SetCursorPosX(posX + 100);
                 ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 1.0f));
-                if (ImGui::Button(id, ImVec2(393-width, 0)))
+                if (ImGui::Button(id, ImVec2(285, 0)))
                 {
                     ResetImeCallbacks();
                     ime_single_field = temp_folder;

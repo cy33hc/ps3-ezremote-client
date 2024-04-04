@@ -186,20 +186,13 @@ namespace INSTALLER
 		char rif_path[256];
 		char *lic_path = NULL;
 
-		int ret;
-		std::vector<DirEntry> home_list = FS::ListDir("/dev_hdd0/home", &ret);
-
-		for(std::vector<DirEntry>::iterator it = home_list.begin(); it != home_list.end(); it++)
+		if (selected_ps3account != nullptr)
 		{
-			if (strcmp(it->name, ".") != 0 && strcmp(it->name, "..") != 0)
+			snprintf(path, sizeof(path) - 1, "%s%s", selected_ps3account->home_dir, "/exdata/act.dat");
+			if (FS::FileExists(path))
 			{
-				snprintf(path, sizeof(path) - 1, "%s%s%s", "/dev_hdd0/home/", it->name, "/exdata/act.dat");
-				if (FS::FileExists(path))
-				{
-					snprintf(path, sizeof(path) - 1, "%s%s%s", "/dev_hdd0/home/", it->name, "/exdata/");
-					lic_path = path;
-					break;
-				}
+				snprintf(path, sizeof(path) - 1, "%s%s", selected_ps3account->home_dir, "/exdata/");
+				lic_path = path;
 			}
 		}
 
@@ -250,10 +243,9 @@ namespace INSTALLER
 		FS::Rename(path, temp_path);
 
 		snprintf(temp_path, 255, "%s/%s.rap", temp_folder, header->content_id);
-		if (FS::FileExists(temp_path))
+		if (FS::FileExists(temp_path) && selected_ps3account != nullptr)
 		{
 			std::vector<char> rap_data = FS::Load(temp_path);
-
 			CreateRif(rap_data.data(), header);
 		}
 		else
@@ -261,20 +253,14 @@ namespace INSTALLER
 			snprintf(temp_path, 255, "%s/%s.rif", temp_folder, header->content_id);
 			if (FS::FileExists(temp_path))
 			{
-				int err;
-				std::vector<DirEntry> home_list = FS::ListDir("/dev_hdd0/home", &err);
-				for (std::vector<DirEntry>::iterator it = home_list.begin(); it != home_list.end(); it++)
+				if (selected_ps3account != nullptr)
 				{
-					if (strcmp(it->name, ".") != 0 && strcmp(it->name, "..") != 0)
+					snprintf(rif_path, sizeof(rif_path) - 1, "%s%s", selected_ps3account->home_dir, "/exdata/act.dat");
+					if (FS::FileExists(rif_path))
 					{
-						snprintf(rif_path, sizeof(rif_path) - 1, "%s%s%s", "/dev_hdd0/home/", it->name, "/exdata/act.dat");
-						if (FS::FileExists(rif_path))
-						{
-							snprintf(rif_path, sizeof(rif_path) - 1, "/dev_hdd0/home/%s/exdata/%s.rif", it->name, header->content_id);
-							if (!FS::FileExists(rif_path))
-								FS::Rename(temp_path, rif_path);
-							break;
-						}
+						snprintf(rif_path, sizeof(rif_path) - 1, "%s/exdata/%s.rif", selected_ps3account->home_dir, header->content_id);
+						if (!FS::FileExists(rif_path))
+							FS::Rename(temp_path, rif_path);
 					}
 				}
 			}

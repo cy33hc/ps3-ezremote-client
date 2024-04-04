@@ -164,7 +164,9 @@
 	FUNC(STR_LANGUAGE)                      \
 	FUNC(STR_TEMP_DIRECTORY)                \
 	FUNC(STR_REALDEBRID)                    \
-	FUNC(STR_BACKGROUND_INSTALL_INPROGRESS)
+	FUNC(STR_BACKGROUND_INSTALL_INPROGRESS) \
+	FUNC(STR_ACCOUNT)                       \
+	FUNC(STR_ACCOUNT_TIP)                   \
 
 #define GET_VALUE(x) x,
 #define GET_STRING(x) #x,
@@ -174,7 +176,7 @@ enum
 	FOREACH_STR(GET_VALUE)
 };
 
-#define LANG_STRINGS_NUM 161
+#define LANG_STRINGS_NUM 163
 #define LANG_ID_SIZE 64
 #define LANG_STR_SIZE 384
 extern char lang_identifiers[LANG_STRINGS_NUM][LANG_ID_SIZE];

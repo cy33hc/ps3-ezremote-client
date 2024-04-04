@@ -6,10 +6,11 @@ ezRemote Client is an application that allows you to connect the PS3 to remote F
 
 ## Features
  - Transfer files back and forth between PS3 and FTP/SMB/NFS/WebDAV/HTTP server
-   - Support for connecting to Http Servers like (Apache/Nginx,Microsoft IIS, NPX Serve) with html directory listings. 
+   - Support for connecting to Http Servers like (Apache,Nginx,RClone,Microsoft IIS, NPX Serve) with html directory listings. 
  - Install PKG files from any remote Server. This will automatically download the PKG to the PS3 and install the rap/rif files if any found. Creates the install bubble in the 
    - The rap/rif files must be in the same folder or in a exdata sub folder where the PKG file exists on the remote server. If a rif file already exists in the PS3 account, the rif file won't be replaced.
    - In the application settings dialog, you have the option of chosing the PS3 account for installation of the rap/rif files
+   - For WebDAV and HTTP Servers, you have the option to enable Backgroud downloads. Just like PS3 PKGi, you need to restart the PS3 for background downloads to start.
  - Create Zip files
  - Extract from zip and 7zip files
  - File management function include cut/copy/paste/rename/delete/new folder/file for files on PS3.

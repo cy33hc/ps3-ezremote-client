@@ -1199,7 +1199,7 @@ namespace Windows
             ImGui::OpenPopup(lang_strings[STR_OVERWRITE_OPTIONS]);
             ImGui::SetNextWindowPos(ImVec2(200, 150));
             ImGui::SetNextWindowSizeConstraints(ImVec2(400, 100), ImVec2(400, 200), NULL, NULL);
-            if (ImGui::BeginPopupModal(lang_strings[STR_OVERWRITE_OPTIONS], NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal(lang_strings[STR_OVERWRITE_OPTIONS], NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
             {
                 ImGui::RadioButton(lang_strings[STR_DONT_OVERWRITE], &overwrite_type, 0);
                 ImGui::RadioButton(lang_strings[STR_ASK_FOR_CONFIRM], &overwrite_type, 1);
@@ -1230,6 +1230,13 @@ namespace Windows
                 {
                     confirm_transfer_state = 1;
                     dont_prompt_overwrite = dont_prompt_overwrite_cb;
+                    ImGui::CloseCurrentPopup();
+                }
+                if (ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false))
+                {
+                    confirm_transfer_state = 2;
+                    dont_prompt_overwrite_cb = dont_prompt_overwrite;
+                    selected_action = ACTION_NONE;
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();

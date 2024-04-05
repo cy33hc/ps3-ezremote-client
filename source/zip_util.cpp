@@ -7,14 +7,20 @@
 #include <sys/stat.h>
 #include <mars/base.h>
 #include <sys/file.h>
-#include <zip.h>
-#include <un7zip.h>
-#include <unrar.h>
+#include <sysutil/osk.h>
+#include "ime_dialog.h"
 #include "common.h"
 #include "fs.h"
 #include "lang.h"
 #include "windows.h"
 #include "zip_util.h"
+
+extern "C"
+{
+#include <zip.h>
+#include <un7zip.h>
+#include <unrar.h>
+}
 
 #define TRANSFER_SIZE (128 * 1024)
 
@@ -26,14 +32,24 @@ namespace ZipUtil
     {
         if (client_data != nullptr)
         {
-            int64_t *bytes_transfered = (int64_t*) client_data;
+            int64_t *bytes_transfered = (int64_t *)client_data;
             *bytes_transfered = progress * 100000;
         }
     }
 
     void callback_7zip(const char *fileName, unsigned long fileSize, unsigned fileNum, unsigned numFiles)
     {
-        sprintf(activity_message, "%s %s: %s", lang_strings[STR_EXTRACTING], filename_extracted, fileName);
+        sprintf(activity_message, "%s %s (%d/%d): %s", lang_strings[STR_EXTRACTING], filename_extracted, fileNum, numFiles, fileName);
+    }
+
+    int callback_rar(UINT msg, LPARAM UserData, LPARAM P1, LPARAM P2)
+    {
+        if (msg == UCM_PROCESSDATA)
+        {
+            int64_t *bytes = (int64_t*) UserData;
+            *bytes += P2;
+            return 1;
+        }
     }
 
     int ZipAddFile(zip_t *zf, const std::string &path, int filename_start)
@@ -73,7 +89,7 @@ namespace ZipUtil
     {
         bytes_to_download = 100000;
         zip_register_progress_callback_with_state(zf, 0.001f, callback_zip, nullptr, &bytes_transfered);
-        
+
         DIR *dfd = opendir(path.c_str());
         if (dfd != NULL)
         {
@@ -140,8 +156,8 @@ namespace ZipUtil
             return COMPRESS_FILE_TYPE_7Z;
         else if (strncmp(buf, (const char *)MAGIC_ZIP_1, 4) == 0 || strncmp(buf, (const char *)MAGIC_ZIP_2, 4) == 0 || strncmp(buf, (const char *)MAGIC_ZIP_3, 4) == 0)
             return COMPRESS_FILE_TYPE_ZIP;
-        //else if (strncmp(buf, (const char *)MAGIC_RAR_1, 7) == 0 || strncmp(buf, (const char *)MAGIC_RAR_2, 8) == 0)
-        //    return COMPRESS_FILE_TYPE_RAR;
+        else if (strncmp(buf, (const char *)MAGIC_RAR_1, 7) == 0 || strncmp(buf, (const char *)MAGIC_RAR_2, 8) == 0)
+            return COMPRESS_FILE_TYPE_RAR;
 
         return COMPRESS_FILE_TYPE_UNKNOWN;
     }
@@ -254,7 +270,7 @@ namespace ZipUtil
         uint64_t progress = 0, numFiles = 0;
         HANDLE hArcData; // Archive Handle
         struct RAROpenArchiveDataEx rarOpenArchiveData;
-        struct RARHeaderDataEx rarHeaderData;
+        struct RARHeaderData rarHeaderData;
 
         memset(&rarOpenArchiveData, 0, sizeof(rarOpenArchiveData));
         memset(&rarHeaderData, 0, sizeof(rarHeaderData));
@@ -266,11 +282,14 @@ namespace ZipUtil
         {
             return 0;
         }
+        RARSetCallback(hArcData, callback_rar, &bytes_transfered);
 
-        while (RARReadHeaderEx(hArcData, &rarHeaderData) == ERAR_SUCCESS)
+        while (RARReadHeader(hArcData, &rarHeaderData) == ERAR_SUCCESS)
         {
             sprintf(activity_message, "%s %s: %s", lang_strings[STR_EXTRACTING], rar_file.name, rarHeaderData.FileName);
 
+            bytes_to_download = rarHeaderData.UnpSize;
+            bytes_transfered = 0;
             if (RARProcessFile(hArcData, RAR_EXTRACT, (char *)dir.c_str(), NULL) != ERAR_SUCCESS)
             {
                 err++;
@@ -279,7 +298,7 @@ namespace ZipUtil
         }
 
         RARCloseArchive(hArcData);
-        return 1;
+        return (err==0);
     }
 
     int Extract(const DirEntry &file, const std::string &dir)

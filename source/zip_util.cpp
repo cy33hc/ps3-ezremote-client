@@ -385,7 +385,7 @@ namespace ZipUtil
 
             if (len < 0)
             {
-                dbglogger_log("error archive_read_data('%s')", pathname.c_str());
+                sprintf(status_message, "error archive_read_data('%s')", pathname.c_str());
                 free(buffer);
                 return 0;
             }
@@ -395,7 +395,7 @@ namespace ZipUtil
             write_len = FS::Write(fd, buffer, len);
             if (write_len != len)
             {
-                dbglogger_log("error write('%s')", pathname.c_str());
+                sprintf(status_message, "error write('%s')", pathname.c_str());
                 free(buffer);
                 return 0;
             }
@@ -432,7 +432,7 @@ namespace ZipUtil
         bytes_to_download = archive_entry_size(e);
         if ((fd = FS::Create(path.c_str())) == nullptr)
         {
-            dbglogger_log("error open('%s')", path.c_str());
+            sprintf(status_message, "error open('%s')", path.c_str());
             return;
         }
 
@@ -493,7 +493,6 @@ namespace ZipUtil
 
     static RemoteArchiveData *OpenRemoteArchive(const std::string &file, RemoteClient *client)
     {
-        dbglogger_log("%s", "OpenRemoteArchive");
         RemoteArchiveData *data;
 
         data = (RemoteArchiveData *)malloc(sizeof(RemoteArchiveData));
@@ -515,7 +514,6 @@ namespace ZipUtil
 
     static ssize_t ReadRemoteArchive(struct archive *a, void *client_data, const void **buff)
     {
-        dbglogger_log("%s", "ReadRemoteArchive");
         ssize_t to_read;
         int ret;
         RemoteArchiveData *data;
@@ -538,7 +536,6 @@ namespace ZipUtil
 
     static int CloseRemoteArchive(struct archive *a, void *client_data)
     {
-        dbglogger_log("%s", "CloseRemoteArchive");
         if (client_data != nullptr)
         {
             RemoteArchiveData *data;
@@ -556,7 +553,6 @@ namespace ZipUtil
 
     int64_t SeekRemoteArchive(struct archive *, void *client_data, int64_t offset, int whence)
     {
-        dbglogger_log("%s", "SeekRemoteArchive");
         RemoteArchiveData *data = (RemoteArchiveData *)client_data;
 
         if (whence == SEEK_SET)
@@ -590,12 +586,12 @@ namespace ZipUtil
 
         if (client == nullptr && getCompressFileType(file.path) == COMPRESS_FILE_TYPE_7Z)
         {
-            return ExtractZip(file, basepath);
+            return Extract7Zip(file, basepath);
         }
 
         if ((a = archive_read_new()) == NULL)
         {
-            dbglogger_log("%s", "archive_read_new failed");
+            sprintf(status_message, "%s", "archive_read_new failed");
             return 0;
         }
 
@@ -607,7 +603,7 @@ namespace ZipUtil
             ret = archive_read_open_filename(a, file.path, ARCHIVE_TRANSFER_SIZE);
             if (ret < ARCHIVE_OK)
             {
-                dbglogger_log("%s", "archive_read_open_filename failed");
+                sprintf(status_message, "%s", "archive_read_open_filename failed");
                 return 0;
             }
         }
@@ -616,21 +612,21 @@ namespace ZipUtil
             client_data = OpenRemoteArchive(file.path, client);
             if (client_data == nullptr)
             {
-                dbglogger_log("%s", "archive_read_open_filename failed");
+                sprintf(status_message, "%s", "archive_read_open_filename failed");
                 return 0;
             }
 
             ret = archive_read_set_seek_callback(a, SeekRemoteArchive);
             if (ret < ARCHIVE_OK)
             {
-                dbglogger_log("archive_read_set_seek_callback failed - %s", archive_error_string(a));
+                sprintf(status_message, "archive_read_set_seek_callback failed - %s", archive_error_string(a));
                 return 0;
             }
 
             ret = archive_read_open(a, client_data, NULL, ReadRemoteArchive, CloseRemoteArchive);
             if (ret < ARCHIVE_OK)
             {
-                dbglogger_log("archive_read_open failed - %s", archive_error_string(a));
+                sprintf(status_message, "archive_read_open failed - %s", archive_error_string(a));
                 return 0;
             }
         }
@@ -643,7 +639,7 @@ namespace ZipUtil
             ret = archive_read_next_header(a, &e);
             if (ret < ARCHIVE_OK)
             {
-                dbglogger_log("%s", "archive_read_next_header failed");
+                sprintf(status_message, "%s", "archive_read_next_header failed");
                 archive_read_free(a);
                 return 0;
             }

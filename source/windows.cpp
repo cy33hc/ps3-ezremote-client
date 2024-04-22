@@ -341,7 +341,7 @@ namespace Windows
             ime_field_size = 255;
             ime_callback = SingleValueImeCallback;
             ime_after_update = AferServerChangeCallback;
-            Dialog::initImeDialog(lang_strings[STR_SERVER], remote_settings->server, 255, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+            Dialog::initImeDialog(lang_strings[STR_SERVER], remote_settings->server, 255, OSK_PANEL_TYPE_DEFAULT, 50, 50);
             gui_mode = GUI_MODE_IME;
         }
         ImGui::SameLine();
@@ -383,7 +383,7 @@ namespace Windows
                 ime_field_size = 32;
                 ime_callback = SingleValueImeCallback;
                 ime_after_update = AfterUsernameCallback;
-                Dialog::initImeDialog(lang_strings[STR_USERNAME], remote_settings->username, 32, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+                Dialog::initImeDialog(lang_strings[STR_USERNAME], remote_settings->username, 32, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                 gui_mode = GUI_MODE_IME;
             }
             ImGui::SameLine();
@@ -403,7 +403,7 @@ namespace Windows
                 ResetImeCallbacks();
                 ime_field_size = 127;
                 ime_callback = SingleValueImeCallback;
-                Dialog::initImeDialog(lang_strings[STR_PASSWORD], remote_settings->password, 127, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+                Dialog::initImeDialog(lang_strings[STR_PASSWORD], remote_settings->password, 127, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                 gui_mode = GUI_MODE_IME;
             }
         }
@@ -472,7 +472,7 @@ namespace Windows
             ime_field_size = 255;
             ime_after_update = AfterLocalFileChangesCallback;
             ime_callback = SingleValueImeCallback;
-            Dialog::initImeDialog(lang_strings[STR_DIRECTORY], local_directory, 256, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+            Dialog::initImeDialog(lang_strings[STR_DIRECTORY], local_directory, 256, OSK_PANEL_TYPE_DEFAULT, 50, 50);
             gui_mode = GUI_MODE_IME;
         }
         ImGui::PopID();
@@ -509,7 +509,7 @@ namespace Windows
             ResetImeCallbacks();
             ime_field_size = 31;
             ime_callback = SingleValueImeCallback;
-            Dialog::initImeDialog(lang_strings[STR_FILTER], local_filter, 31, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+            Dialog::initImeDialog(lang_strings[STR_FILTER], local_filter, 31, OSK_PANEL_TYPE_DEFAULT, 50, 50);
             gui_mode = GUI_MODE_IME;
         }
         ImGui::PopID();
@@ -635,7 +635,7 @@ namespace Windows
             ime_field_size = 255;
             ime_after_update = AfterRemoteFileChangesCallback;
             ime_callback = SingleValueImeCallback;
-            Dialog::initImeDialog(lang_strings[STR_DIRECTORY], remote_directory, 256, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+            Dialog::initImeDialog(lang_strings[STR_DIRECTORY], remote_directory, 256, OSK_PANEL_TYPE_DEFAULT, 50, 50);
             gui_mode = GUI_MODE_IME;
         }
         ImGui::PopID();
@@ -673,7 +673,7 @@ namespace Windows
             ResetImeCallbacks();
             ime_field_size = 31;
             ime_callback = SingleValueImeCallback;
-            Dialog::initImeDialog(lang_strings[STR_FILTER], remote_filter, 31, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+            Dialog::initImeDialog(lang_strings[STR_FILTER], remote_filter, 31, OSK_PANEL_TYPE_DEFAULT, 50, 50);
             gui_mode = GUI_MODE_IME;
         };
         ImGui::PopID();
@@ -1050,7 +1050,7 @@ namespace Windows
                     ime_after_update = AfterExtractFolderCallback;
                 else
                     ime_after_update = AfterExtractRemoteFolderCallback;
-                Dialog::initImeDialog(lang_strings[STR_EXTRACT_LOCATION], extract_zip_folder, 255, OSK_PANEL_TYPE_DEFAULT, 600, 350);
+                Dialog::initImeDialog(lang_strings[STR_EXTRACT_LOCATION], extract_zip_folder, 255, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                 gui_mode = GUI_MODE_IME;
                 file_transfering = false;
                 SetModalMode(false);
@@ -1073,7 +1073,7 @@ namespace Windows
                     ime_field_size = 383;
                     ime_callback = SingleValueImeCallback;
                     ime_after_update = AfterZipFileCallback;
-                    Dialog::initImeDialog(lang_strings[STR_ZIP_FILE_PATH], zip_file_path, 383, OSK_PANEL_TYPE_DEFAULT, 600, 350);
+                    Dialog::initImeDialog(lang_strings[STR_ZIP_FILE_PATH], zip_file_path, 383, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                     gui_mode = GUI_MODE_IME;
                     file_transfering = true;
                     SetModalMode(false);
@@ -1424,7 +1424,7 @@ namespace Windows
                         ime_field_size = 512;
                         ime_after_update = AfterEditorCallback;
                         ime_callback = SingleValueImeCallback;
-                        Dialog::initImeDialog(lang_strings[STR_EDIT], edit_line, 512, OSK_PANEL_TYPE_DEFAULT, 420, 290);
+                        Dialog::initImeDialog(lang_strings[STR_EDIT], edit_line, 512, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                         gui_mode = GUI_MODE_IME;
                     }
                     ImGui::PopStyleVar();
@@ -1593,7 +1593,7 @@ namespace Windows
                     ime_single_field = temp_folder;
                     ime_field_size = 512;
                     ime_callback = SingleValueImeCallback;
-                    Dialog::initImeDialog(lang_strings[STR_COMPRESSED_FILE_PATH], temp_folder, 255, OSK_PANEL_TYPE_DEFAULT, 200, 80);
+                    Dialog::initImeDialog(lang_strings[STR_COMPRESSED_FILE_PATH], temp_folder, 255, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                     gui_mode = GUI_MODE_IME;
                 }
                 ImGui::PopStyleVar();
@@ -1804,7 +1804,7 @@ namespace Windows
                 ime_cancelled = CancelActionCallBack;
                 ime_callback = SingleValueImeCallback;
                 ImVec2 pos = (selected_action == ACTION_NEW_LOCAL_FOLDER || selected_action == ACTION_NEW_LOCAL_FILE) ? ImVec2(410, 350) : ImVec2(1330, 350);
-                Dialog::initImeDialog((selected_action == ACTION_NEW_LOCAL_FILE || selected_action == ACTION_NEW_REMOTE_FILE)? lang_strings[STR_NEW_FILE]: lang_strings[STR_NEW_FOLDER], dialog_editor_text, 128, OSK_PANEL_TYPE_DEFAULT, pos.x, pos.y);
+                Dialog::initImeDialog((selected_action == ACTION_NEW_LOCAL_FILE || selected_action == ACTION_NEW_REMOTE_FILE)? lang_strings[STR_NEW_FILE]: lang_strings[STR_NEW_FOLDER], dialog_editor_text, 128, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                 gui_mode = GUI_MODE_IME;
             }
             break;
@@ -1886,7 +1886,7 @@ namespace Windows
                 ime_after_update = AfterFolderNameCallback;
                 ime_cancelled = CancelActionCallBack;
                 ime_callback = SingleValueImeCallback;
-                Dialog::initImeDialog(lang_strings[STR_RENAME], dialog_editor_text, 128, OSK_PANEL_TYPE_DEFAULT, 410, 350);
+                Dialog::initImeDialog(lang_strings[STR_RENAME], dialog_editor_text, 128, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                 gui_mode = GUI_MODE_IME;
             }
             break;
@@ -1903,7 +1903,7 @@ namespace Windows
                 ime_after_update = AfterFolderNameCallback;
                 ime_cancelled = CancelActionCallBack;
                 ime_callback = SingleValueImeCallback;
-                Dialog::initImeDialog(lang_strings[STR_RENAME], dialog_editor_text, 128, OSK_PANEL_TYPE_DEFAULT, 1330, 350);
+                Dialog::initImeDialog(lang_strings[STR_RENAME], dialog_editor_text, 128, OSK_PANEL_TYPE_DEFAULT, 50, 50);
                 gui_mode = GUI_MODE_IME;
             }
             break;

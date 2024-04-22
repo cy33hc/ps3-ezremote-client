@@ -929,7 +929,7 @@ namespace Actions
 
     void *ExtractRemoteZipThread(void *argp)
     {
-        /*
+        
         FS::MkDirs(extract_zip_folder);
         std::vector<DirEntry> files;
         if (multi_selected_remote_files.size() > 0)
@@ -947,7 +947,7 @@ namespace Actions
                 if (ret == 0)
                 {
                     sprintf(status_message, "%s %s", lang_strings[STR_FAILED_TO_EXTRACT], it->name);
-                    sceKernelUsleep(100000);
+                    sysUsleep(100000);
                 }
             }
         }
@@ -955,13 +955,13 @@ namespace Actions
         multi_selected_remote_files.clear();
         Windows::SetModalMode(false);
         selected_action = ACTION_REFRESH_LOCAL_FILES;
-        */
+       
         return NULL;
     }
 
     void ExtractRemoteZips()
     {
-        /*
+        
         sprintf(status_message, "%s", "");
         int res = pthread_create(&bk_activity_thid, NULL, ExtractRemoteZipThread, NULL);
         if (res != 0)
@@ -971,7 +971,7 @@ namespace Actions
             multi_selected_remote_files.clear();
             Windows::SetModalMode(false);
         }
-        */
+       
     }
 
     void *MakeZipThread(void *argp)
@@ -1288,7 +1288,7 @@ namespace Actions
             activity_inprogess = false;
             while (confirm_state == CONFIRM_WAIT)
             {
-                // sceKernelUsleep(100000);
+                sysUsleep(100000);
             }
             activity_inprogess = true;
             selected_action = action_to_take;

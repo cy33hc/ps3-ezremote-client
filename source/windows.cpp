@@ -1037,31 +1037,30 @@ namespace Windows
             }
             ImGui::PopID();
             ImGui::Separator();
-
             
+            ImGui::PushID("Extract##settings");
+            if (ImGui::Selectable(lang_strings[STR_EXTRACT], false, getSelectableFlag(REMOTE_ACTION_EXTRACT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
+            {
+                ResetImeCallbacks();
+                sprintf(extract_zip_folder, "%s", getExtractFolder().c_str());
+                ime_single_field = extract_zip_folder;
+                ime_field_size = 255;
+                ime_callback = SingleValueImeCallback;
+                if (local_browser_selected)
+                    ime_after_update = AfterExtractFolderCallback;
+                else
+                    ime_after_update = AfterExtractRemoteFolderCallback;
+                Dialog::initImeDialog(lang_strings[STR_EXTRACT_LOCATION], extract_zip_folder, 255, OSK_PANEL_TYPE_DEFAULT, 600, 350);
+                gui_mode = GUI_MODE_IME;
+                file_transfering = false;
+                SetModalMode(false);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::PopID();
+            ImGui::Separator();
+
             if (local_browser_selected)
             {
-                ImGui::PushID("Extract##settings");
-                if (ImGui::Selectable(lang_strings[STR_EXTRACT], false, getSelectableFlag(REMOTE_ACTION_EXTRACT) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
-                {
-                    ResetImeCallbacks();
-                    sprintf(extract_zip_folder, "%s", getExtractFolder().c_str());
-                    ime_single_field = extract_zip_folder;
-                    ime_field_size = 255;
-                    ime_callback = SingleValueImeCallback;
-                    if (local_browser_selected)
-                        ime_after_update = AfterExtractFolderCallback;
-                    else
-                        ime_after_update = AfterExtractRemoteFolderCallback;
-                    Dialog::initImeDialog(lang_strings[STR_EXTRACT_LOCATION], extract_zip_folder, 255, OSK_PANEL_TYPE_DEFAULT, 600, 350);
-                    gui_mode = GUI_MODE_IME;
-                    file_transfering = false;
-                    SetModalMode(false);
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::PopID();
-                ImGui::Separator();
-
                 ImGui::PushID("Compress##settings");
                 if (ImGui::Selectable(lang_strings[STR_COMPRESS], false, getSelectableFlag(REMOTE_ACTION_NONE) | ImGuiSelectableFlags_DontClosePopups, ImVec2(135, 0)))
                 {

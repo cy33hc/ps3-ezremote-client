@@ -1664,6 +1664,11 @@ void FtpClient::SetCallbackXferFunction(FtpCallbackXfer pointer)
 	mp_ftphandle->xfercb = pointer;
 }
 
+FtpCallbackXfer FtpClient::GetCallbackXferFunction()
+{
+	return mp_ftphandle->xfercb;
+}
+
 void FtpClient::SetCallbackArg(void *arg)
 {
 	mp_ftphandle->cbarg = arg;

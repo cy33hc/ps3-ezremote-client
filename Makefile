@@ -43,7 +43,7 @@ PKGFILES    :=  pkgfiles
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	 $(DEBUG_LIBS) -larchive -llzma -lbzip2 -lzip -lunrar -lun7zip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
+LIBS		:=	 $(DEBUG_LIBS) -larchive -llzma -lbzip2 -lzip -llexbor_static -lcurl -lhttpclient -lssh2 -lsmb2 -lnfs -lpolarssl -lmbedtls -lmbedcrypto -lcrypto -lpthread -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lnet -lsysmodule -lm -lz -lstdc++ -lsysfs
 
 
 #---------------------------------------------------------------------------------

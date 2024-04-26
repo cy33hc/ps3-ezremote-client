@@ -12,7 +12,7 @@ ezRemote Client is an application that allows you to connect the PS3 to remote F
    - In the application settings dialog, you have the option of chosing the PS3 account for installation of the rap/rif files
    - For WebDAV and HTTP Servers, you have the option to enable Backgroud downloads. Just like PS3 PKGi, you need to restart the PS3 for background downloads to start.
  - Create Zip files
- - Extract from zip and 7zip files
+ - Extract from zip, rar, 7zip, tar, tar.gz, tar.bz2 files
  - File management function include cut/copy/paste/rename/delete/new folder/file for files on PS3.
  - Simple Text Editor to make simply changes to config text files. Limited to edit files over 32kb and limited to edit lines up to 512 characters. If you try edit lines longer then 512 characters, it will be truncated. For common text files with the following extensions (txt, log, ini, json, xml, html, conf, config) selecting them in the file browser with the X button will automatically open the Text Editor.
 

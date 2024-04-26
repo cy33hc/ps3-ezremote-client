@@ -14,7 +14,7 @@ ezRemote Client is an application that allows you to connect the PS3 to remote F
  - Create Zip files
  - Extract from zip, rar, 7zip, tar, tar.gz, tar.bz2 files
  - File management function include cut/copy/paste/rename/delete/new folder/file for files on PS3.
- - Simple Text Editor to make simply changes to config text files. Limited to edit files over 32kb and limited to edit lines up to 512 characters. If you try edit lines longer then 512 characters, it will be truncated. For common text files with the following extensions (txt, log, ini, json, xml, html, conf, config) selecting them in the file browser with the X button will automatically open the Text Editor.
+ - Simple Text Editor to make simply changes to config text files. Limited to edit files below 32kb and limited to edit lines up to 512 characters. If you try edit lines longer then 512 characters, it will be truncated. For common text files with the following extensions (txt, log, ini, json, xml, html, conf, config) selecting them in the file browser with the X button will automatically open the Text Editor.
 
 ## Usage
 To distinguish between FTP, SMB, NFS, WebDAV or HTTP, the URL must be prefix with **ftp://**, **smb://**, **nfs://**, **webdav://**, **webdavs://**, **http://** and **https://**

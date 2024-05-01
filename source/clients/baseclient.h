@@ -28,6 +28,9 @@ public:
     std::vector<DirEntry> ListDir(const std::string &path);
     std::string GetPath(std::string path1, std::string path2);
     std::string GetFullPath(std::string path1);
+    int GetRange(void *fp, void *buffer, uint64_t size, uint64_t offset);
+    void *Open(const std::string &path, int flags);
+    void Close(void *fp);
     bool IsConnected();
     bool Ping();
     const char *LastResponse();

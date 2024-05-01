@@ -32,6 +32,7 @@ enum CompressFileType {
 
 struct RemoteArchiveData
 {
+    void *fp;
     std::string path;
     uint64_t size;
     uint64_t offset;

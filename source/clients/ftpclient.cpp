@@ -1693,7 +1693,7 @@ ClientType FtpClient::clientType()
 
 uint32_t FtpClient::SupportedActions()
 {
-	return REMOTE_ACTION_ALL ^ REMOTE_ACTION_CUT ^ REMOTE_ACTION_COPY ^ REMOTE_ACTION_PASTE;
+	return REMOTE_ACTION_ALL ^ REMOTE_ACTION_CUT ^ REMOTE_ACTION_COPY ^ REMOTE_ACTION_PASTE ^ REMOTE_ACTION_RAW_READ;
 }
 
 std::string FtpClient::GetPath(std::string ppath1, std::string ppath2)
@@ -1732,4 +1732,21 @@ int FtpClient::Head(const std::string &path, void *buffer, uint64_t len)
 	if (l != len)
 		return 0;
 	return 1;
+}
+
+void *FtpClient::Open(const std::string &path, int flags)
+{
+    sprintf(mp_ftphandle->response, "%s", lang_strings[STR_UNSUPPORTED_OPERATION_MSG]);
+    return nullptr;
+}
+
+void FtpClient::Close(void *fp)
+{
+    sprintf(mp_ftphandle->response, "%s", lang_strings[STR_UNSUPPORTED_OPERATION_MSG]);
+}
+
+int FtpClient::GetRange(void *fp, void *buffer, uint64_t size, uint64_t offset)
+{
+    sprintf(mp_ftphandle->response, "%s", lang_strings[STR_UNSUPPORTED_OPERATION_MSG]);
+    return -1;
 }

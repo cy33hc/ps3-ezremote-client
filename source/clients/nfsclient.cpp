@@ -236,11 +236,6 @@ int NfsClient::Get(const std::string &outputfile, const std::string &ppath, uint
 
 int NfsClient::GetRange(const std::string &ppath, void *buffer, uint64_t size, uint64_t offset)
 {
-	if (!FileExists(ppath))
-	{
-		return 0;
-	}
-
 	struct nfsfh *nfsfh = nullptr;
 	int ret = nfs_open(nfs, ppath.c_str(), 0400, &nfsfh);
 	if (ret != 0)
@@ -249,7 +244,17 @@ int NfsClient::GetRange(const std::string &ppath, void *buffer, uint64_t size, u
 		return 0;
 	}
 
-	ret = nfs_lseek(nfs, nfsfh, offset, SEEK_SET, NULL);
+	ret = this->GetRange(nfsfh, buffer, size, offset);
+	nfs_close(nfs, nfsfh);
+
+	return ret;
+}
+
+int NfsClient::GetRange(void *fp, void *buffer, uint64_t size, uint64_t offset)
+{
+	struct nfsfh *nfsfh = (struct nfsfh *)fp;
+
+	int ret = nfs_lseek(nfs, nfsfh, offset, SEEK_SET, NULL);
 	if (ret != 0)
 	{
 		sprintf(response, "%s", nfs_get_error(nfs));
@@ -257,7 +262,6 @@ int NfsClient::GetRange(const std::string &ppath, void *buffer, uint64_t size, u
 	}
 
 	int count = nfs_read(nfs, nfsfh, size, buffer);
-	nfs_close(nfs, nfsfh);
 	if (count != size)
 		return 0;
 
@@ -506,4 +510,15 @@ ClientType NfsClient::clientType()
 uint32_t NfsClient::SupportedActions()
 {
 	return REMOTE_ACTION_ALL ^ REMOTE_ACTION_CUT ^ REMOTE_ACTION_COPY ^ REMOTE_ACTION_PASTE;
+}
+
+void *NfsClient::Open(const std::string &path, int flags)
+{
+	sprintf(this->response, "%s", lang_strings[STR_UNSUPPORTED_OPERATION_MSG]);
+	return nullptr;
+}
+
+void NfsClient::Close(void *fp)
+{
+	sprintf(this->response, "%s", lang_strings[STR_UNSUPPORTED_OPERATION_MSG]);
 }

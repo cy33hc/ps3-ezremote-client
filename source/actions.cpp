@@ -360,6 +360,7 @@ namespace Actions
 
         if (confirm_state == CONFIRM_YES)
         {
+            prev_tick = Util::GetTick();
             return remoteclient->Put(src, dest);
         }
 
@@ -514,6 +515,7 @@ namespace Actions
 
         if (confirm_state == CONFIRM_YES)
         {
+            prev_tick = Util::GetTick();
             return remoteclient->Get(dest, src);
         }
 
@@ -1307,6 +1309,7 @@ namespace Actions
 
         if (confirm_state == CONFIRM_YES)
         {
+            prev_tick = Util::GetTick();
             if (isCopy)
                 return FS::Copy(src, dest);
             else
@@ -1510,6 +1513,7 @@ namespace Actions
 
         if (confirm_state == CONFIRM_YES)
         {
+            prev_tick = Util::GetTick();
             if (isCopy)
                 return remoteclient->Copy(src, dest);
             else

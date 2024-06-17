@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 #include <dirent.h>
+#include <sys/time.h>
 // #include <filesystem>
 
 #include <stdio.h>
@@ -512,6 +513,7 @@ namespace FS
 
         size_t bytes_read = 0;
         bytes_transfered = 0;
+        prev_tick = Util::GetTick();
         const size_t buf_size = 0x10000;
         unsigned char *buf = new unsigned char[buf_size];
 

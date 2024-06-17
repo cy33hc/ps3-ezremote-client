@@ -1,5 +1,6 @@
 #include <fstream>
 #include <regex>
+#include <sys/time.h>
 #include "common.h"
 #include "clients/remote_client.h"
 #include "clients/webdav.h"
@@ -133,6 +134,7 @@ int WebDAVClient::Put(const std::string &inputfile, const std::string &path, uin
 {
     size_t bytes_remaining = FS::GetSize(inputfile);
     bytes_transfered = 0;
+    prev_tick = Util::GetTick();
 
     client->SetProgressFnCallback(&bytes_transfered, UploadProgressCallback);
     std::string encode_url = this->host_url + CHTTPClient::EncodeUrl(GetFullPath(path));

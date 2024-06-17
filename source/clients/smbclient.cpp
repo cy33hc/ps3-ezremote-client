@@ -217,6 +217,7 @@ int SmbClient::Get(const std::string &outputfile, const std::string &ppath, uint
 	uint8_t *buff = (uint8_t*)malloc(max_read_size);
 	int count = 0;
 	bytes_transfered = 0;
+	prev_tick = Util::GetTick();
 	while ((count = smb2_read(smb2, in, buff, max_read_size)) > 0)
 	{
 		if (count < 0)
@@ -332,6 +333,7 @@ int SmbClient::Put(const std::string &inputfile, const std::string &ppath, uint6
 	uint8_t* buff = (uint8_t*)malloc(max_write_size);
 	int count = 0;
 	bytes_transfered = 0;
+	prev_tick = Util::GetTick();
 	while ((count = FS::Read(in, buff, max_write_size)) > 0)
 	{
 		if (count < 0)

@@ -404,6 +404,7 @@ namespace Actions
                     snprintf(activity_message, 1024, "%s %s", lang_strings[STR_UPLOADING], entries[i].path);
                     bytes_to_download = entries[i].file_size;
                     bytes_transfered = 0;
+                    prev_tick = Util::GetTick();
                     ret = UploadFile(entries[i].path, new_path);
                     if (ret <= 0)
                     {
@@ -481,6 +482,7 @@ namespace Actions
     int DownloadFile(const char *src, const char *dest)
     {
         bytes_transfered = 0;
+        prev_tick = Util::GetTick();
         if (!remoteclient->Size(src, &bytes_to_download))
         {
             remoteclient->Quit();
@@ -636,6 +638,7 @@ namespace Actions
         sprintf(activity_message, "%s %s to %s", lang_strings[STR_DOWNLOADING], filename.c_str(), local_file);
         remoteclient->Size(filename, &bytes_to_download);
         bytes_transfered = 0;
+        prev_tick = Util::GetTick();
         file_transfering = true;
         int ret = remoteclient->Get(local_file, filename);
         if (ret == 0)
@@ -1351,6 +1354,7 @@ namespace Actions
                     snprintf(activity_message, 1024, "%s %s", isCopy ? lang_strings[STR_COPYING] : lang_strings[STR_MOVING], entries[i].path);
                     bytes_to_download = entries[i].file_size;
                     bytes_transfered = 0;
+                    prev_tick = Util::GetTick();
                     ret = CopyOrMoveLocalFile(entries[i].path, new_path, isCopy);
                     if (ret <= 0)
                     {
@@ -1600,6 +1604,7 @@ namespace Actions
                     snprintf(activity_message, 1024, "%s %s", lang_strings[STR_COPYING], entries[i].path);
                     bytes_to_download = entries[i].file_size;
                     bytes_transfered = 0;
+                    prev_tick = Util::GetTick();
                     ret = CopyOrMoveRemoteFile(entries[i].path, new_path, true);
                     if (ret <= 0)
                     {

@@ -17,6 +17,7 @@
 #include "lang.h"
 #include "windows.h"
 #include "zip_util.h"
+#include "util.h"
 
 extern "C"
 {
@@ -326,6 +327,7 @@ namespace ZipUtil
         {
             snprintf(activity_message, 255, "%s: %s", lang_strings[STR_EXTRACTING], pathname);
             bytes_transfered = 0;
+            prev_tick = Util::GetTick();
 
             extract_file(a, e, realpathname);
         }

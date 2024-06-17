@@ -1,5 +1,6 @@
 #include <fstream>
 #include <curl/curl.h>
+#include <sys/time.h>
 #include "common.h"
 #include "clients/remote_client.h"
 #include "clients/baseclient.h"
@@ -91,6 +92,8 @@ int BaseClient::Get(const std::string &outputfile, const std::string &path, uint
 {
     long status;
     bytes_transfered = 0;
+    prev_tick = Util::GetTick();
+
     if (!Size(path, &bytes_to_download))
     {
         sprintf(this->response, "%s", lang_strings[STR_FAIL_DOWNLOAD_MSG]);

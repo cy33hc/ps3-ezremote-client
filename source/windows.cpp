@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <set>
 #include <sysutil/osk.h>
+#include <sys/time.h>
 #include "clients/remote_client.h"
 #include "actions.h"
 #include "config.h"
@@ -40,6 +41,7 @@ static char txt_http_server_port[6];
 bool handle_updates = false;
 int64_t bytes_transfered;
 int64_t bytes_to_download;
+uint64_t prev_tick;;
 std::vector<DirEntry> local_files;
 std::vector<DirEntry> remote_files;
 std::set<DirEntry> multi_selected_local_files;
@@ -1326,9 +1328,18 @@ namespace Windows
                 if (file_transfering)
                 {
                     static float progress = 0.0f;
+                    static double transfer_speed = 0.0f;
                     static char progress_text[32];
+                    static timeval cur_tick;
+                    static double tick_delta;
+
+                    gettimeofday(&cur_tick, NULL);
+                    tick_delta = ((cur_tick.tv_sec * 1000000 + cur_tick.tv_usec) - prev_tick) * 1.0f / 1000000.0f;
+
                     progress = bytes_transfered * 1.0f / (float)bytes_to_download;
-                    sprintf(progress_text, "%.3f%%", progress*100.0f);
+                    transfer_speed = (bytes_transfered * 1.0f / tick_delta) / 1048576.0f;
+
+                    sprintf(progress_text, "%.3fMB/s", transfer_speed);
                     ImGui::ProgressBar(progress, ImVec2(485, 0), progress_text);
                 }
 

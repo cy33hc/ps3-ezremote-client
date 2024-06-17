@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdarg.h>
+#include <sys/time.h>
 // #include "base64.h"
 // #include "openssl/md5.h"
 #include "common.h"
@@ -219,6 +220,13 @@ namespace Util
         entry->file_size = 0;
         entry->isDir = true;
         entry->selectable = false;
+    }
+
+    static uint64_t GetTick()
+    {
+        static struct timeval tick;
+        gettimeofday(&tick, NULL);
+        return tick.tv_sec * 1000000 + tick.tv_usec;
     }
 }
 #endif

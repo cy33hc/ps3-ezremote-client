@@ -830,6 +830,23 @@ namespace Windows
         ImGui::Columns(1);
         ImGui::EndChild();
         EndGroupPanel();
+
+        if (ImGui::IsKeyPressed(ImGuiKey_GamepadL2) && !paused)
+        {
+            if (selected_browser & LOCAL_BROWSER)
+            {
+                selected_local_file = local_files[0];
+                selected_action = ACTION_CHANGE_LOCAL_DIRECTORY;
+            }
+            else if (selected_browser & REMOTE_BROWSER)
+            {
+                if (remoteclient != nullptr && remote_files.size() > 0)
+                {
+                    selected_remote_file = remote_files[0];
+                    selected_action = ACTION_CHANGE_REMOTE_DIRECTORY;
+                }
+            }
+        }
     }
 
     void StatusPanel()
@@ -1385,7 +1402,7 @@ namespace Windows
                     progress = bytes_transfered * 1.0f / (float)bytes_to_download;
                     transfer_speed = (bytes_transfered * 1.0f / tick_delta) / 1048576.0f;
 
-                    sprintf(progress_text, "%.3fMB/s", transfer_speed);
+                    sprintf(progress_text, "%.3f MB/s", transfer_speed);
                     ImGui::ProgressBar(progress, ImVec2(485, 0), progress_text);
                 }
 
@@ -2313,6 +2330,10 @@ namespace Windows
         if (ime_result == IME_DIALOG_RESULT_FINISHED)
         {
             CONFIG::SetClientType(remote_settings);
+            if (strncasecmp(remote_settings->server, "https://archive.org/", 20) == 0)
+            {
+                sprintf(remote_settings->http_server_type, "%s", HTTP_SERVER_ARCHIVEORG);
+            }
         }
     }
 

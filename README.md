@@ -75,6 +75,13 @@ To distinguish between FTP, SMB, NFS, WebDAV or HTTP, the URL must be prefix wit
      - port is optional and defaults to 80(http) and 443(https) if not provided
      - url_path is optional based on your HTTP Server hosting requiremets
    ```
+
+- For Internet Archive repos download URLs
+  - Only supports parsing of the download URL (ie the URL where you see a list of files). Example
+    |      |           |  |
+    |----------|-----------|---|
+    | ![archive_org_screen1](https://github.com/user-attachments/assets/b129b6cf-b938-4d7c-a3fa-61e1c633c1f6) | ![archive_org_screen2](https://github.com/user-attachments/assets/646106d1-e60b-4b35-b153-3475182df968)| ![image](https://github.com/user-attachments/assets/cad94de8-a694-4ef5-92a8-b87468e30adb) |
+    
 Tested with following WebDAV server:
  - **(Recommeded)** [Rclone](https://rclone.org/) - For hosting your own WebDAV or HTTP server. (Recommended since this allow you to setup rclone as a proxy for many public file share websites like mega, google drive, onedrive etc.. https://rclone.org/#providers)
  - [Dufs](https://github.com/sigoden/dufs) - For hosting your own WebDAV server.
@@ -95,6 +102,7 @@ Circle - Un-Select the file list to navigate to other widgets or Close Dialog wi
 Square - Mark file(s)/folder(s) for Delete/Rename/Upload/Download
 R1 - Navigate to the Remote list of files
 L1 - Navigate to the Local list of files
+L2 - Go up a directory from current directory
 Start Button - Exit Application
 ```
 

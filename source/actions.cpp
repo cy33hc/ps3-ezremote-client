@@ -8,6 +8,7 @@
 #include "clients/archiveorg.h"
 #include "clients/ftpclient.h"
 #include "clients/iis.h"
+#include "clients/myrient.h"
 #include "clients/nfsclient.h"
 #include "clients/nginx.h"
 #include "clients/npxserve.h"
@@ -1176,6 +1177,8 @@ namespace Actions
                 remoteclient = new RCloneClient();
             else if (strcmp(remote_settings->http_server_type, HTTP_SERVER_ARCHIVEORG) == 0)
                 remoteclient = new ArchiveOrgClient();
+            else if (strcmp(remote_settings->http_server_type, HTTP_SERVER_MYRIENT) == 0)
+                remoteclient = new MyrientClient();
         }
         else if (strncmp(remote_settings->server, "webdavs://", 10) == 0 || strncmp(remote_settings->server, "webdav://", 9) == 0)
         {

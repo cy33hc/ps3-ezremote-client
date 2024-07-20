@@ -1,13 +1,13 @@
 #include <fstream>
 #include <curl/curl.h>
 #include <sys/time.h>
-#include "common.h"
 #include "clients/remote_client.h"
 #include "clients/baseclient.h"
 #include "config.h"
 #include "lang.h"
 #include "util.h"
 #include "windows.h"
+#include "common.h"
 
 BaseClient::BaseClient(){};
 
@@ -79,6 +79,26 @@ int BaseClient::Size(const std::string &path, int64_t *size)
             if (content_length.length() > 0)
                 *size = atoll(content_length.c_str());
             return 1;
+        }
+        else // Server doesn't support HEAD request. Try get range with 0 bytes and grab size from the response header 
+             // example: Content-Range: bytes 0-10/4372785
+        {
+            CHTTPClient::HttpResponse range_res;
+            CHTTPClient::HeadersMap range_headers;
+            range_headers["Range"] = "bytes=0-1";
+            if (client->Get(encoded_url, range_headers, range_res))
+            {
+                if (HTTP_SUCCESS(range_res.iCode))
+                {
+                    std::string content_range = range_res.mapHeaders["Content-Range"];
+                    std::vector<std::string> range_parts = Util::Split(content_range, "/");
+                    if (range_parts.size() == 2)
+                    {
+                        *size = atoll(range_parts[1].c_str());
+                        return 1;
+                    }
+                }
+            }
         }
     }
     else

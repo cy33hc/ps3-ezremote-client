@@ -157,7 +157,7 @@ namespace CONFIG
 
         langs = { "Default", "Arabic", "Catalan", "Croatian", "Dutch", "English", "Euskera", "French", "Galego", "German", "Greek", 
                   "Hungarian", "Indonesian", "Italiano", "Japanese", "Korean", "Polish", "Portuguese_BR", "Russian", "Romanian", "Ryukyuan", "Spanish", "Turkish",
-                  "Simplified Chinese", "Traditional Chinese", "Thai", "Ukrainian"};
+                  "Simplified Chinese", "Traditional Chinese", "Thai", "Ukrainian", "Vietnamese"};
 
         http_servers = {HTTP_SERVER_APACHE, HTTP_SERVER_MS_IIS, HTTP_SERVER_NGINX, HTTP_SERVER_NPX_SERVE, HTTP_SERVER_RCLONE, HTTP_SERVER_ARCHIVEORG, HTTP_SERVER_MYRIENT};
         text_file_extensions = { ".txt", ".ini", ".log", ".json", ".xml", ".html", ".xhtml", ".conf", ".config" };

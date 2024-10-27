@@ -119,25 +119,27 @@ void InitImgui()
 	sysUtilGetSystemParamInt(SYSUTIL_SYSTEMPARAM_ID_LANG, &lang_idx);
 
 	lang = Util::Trim(lang, " ");
-	if (lang.compare("Korean") == 0 || lang_idx == SYSUTIL_LANG_KOREAN)
+	bool use_system_lang = lang.empty() || lang.compare("Default") == 0;
+
+	if (lang.compare("Korean") == 0 || (use_system_lang && lang_idx == SYSUTIL_LANG_KOREAN))
 	{
 		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
 	}
-	else if (lang.compare("Simplified Chinese") == 0 || lang_idx == SYSUTIL_LANG_CHINESE_S)
+	else if (lang.compare("Simplified Chinese") == 0 || (use_system_lang && lang_idx == SYSUTIL_LANG_CHINESE_S))
 	{
 		ImFontConfig config;
 		config.OversampleH = 1;
 		config.OversampleV = 1;
 		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, &config, io.Fonts->GetGlyphRangesChineseFull());
 	}
-	else if (lang.compare("Traditional Chinese") == 0 || lang_idx == SYSUTIL_LANG_CHINESE_T)
+	else if (lang.compare("Traditional Chinese") == 0 || (use_system_lang && lang_idx == SYSUTIL_LANG_CHINESE_T))
 	{
 		ImFontConfig config;
 		config.OversampleH = 1;
 		config.OversampleV = 1;
 		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, &config, io.Fonts->GetGlyphRangesChineseFull());
 	}
-	else if (lang.compare("Japanese") == 0 || lang.compare("Ryukyuan") == 0 || lang_idx == SYSUTIL_LANG_JAPANESE)
+	else if (lang.compare("Japanese") == 0 || lang.compare("Ryukyuan") == 0 || (use_system_lang && lang_idx == SYSUTIL_LANG_JAPANESE))
 	{
 		io.Fonts->AddFontFromFileTTF(APP_FONTS_DIR "/Roboto_ext.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	}

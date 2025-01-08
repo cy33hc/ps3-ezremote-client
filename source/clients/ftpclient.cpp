@@ -123,7 +123,7 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 	}
 	mp_ftphandle->handle = sControl;
 
-	if (ReadResponse('2', mp_ftphandle) == 0)
+	if (ReadResponse("2", mp_ftphandle) == 0)
 	{
 		close(mp_ftphandle->handle);
 		mp_ftphandle->handle = 0;
@@ -140,7 +140,7 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 		cmd = "USER anonymous";
 	}
 
-	if (!FtpSendCmd(cmd, '3', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "3", mp_ftphandle))
 	{
 		if (mp_ftphandle->ctrl != NULL)
 			return 1;
@@ -159,7 +159,7 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
 
 	cmd = "PASS " + pass;
 	int ret;
-	if ((ret = FtpSendCmd(cmd, '2', mp_ftphandle)))
+	if ((ret = FtpSendCmd(cmd, "2", mp_ftphandle)))
 	{
 		mp_ftphandle->is_connected = true;
 	}
@@ -177,7 +177,7 @@ int FtpClient::Connect(const std::string &url, const std::string &user, const st
  *
  * return 1 if proper response received, 0 otherwise
  */
-int FtpClient::FtpSendCmd(const std::string &cmd, char expected_resp, ftphandle *nControl)
+int FtpClient::FtpSendCmd(const std::string &cmd, const std::string &expected_resp, ftphandle *nControl)
 {
 	char buf[512];
 	int x;
@@ -203,7 +203,7 @@ int FtpClient::FtpSendCmd(const std::string &cmd, char expected_resp, ftphandle 
  * return 0 if first char doesn't match
  * return 1 if first char matches
  */
-int FtpClient::ReadResponse(char c, ftphandle *nControl)
+int FtpClient::ReadResponse(const std::string &c, ftphandle *nControl)
 {
 	char match[5];
 
@@ -226,7 +226,7 @@ int FtpClient::ReadResponse(char c, ftphandle *nControl)
 		} while (strncmp(nControl->response, match, 4));
 	}
 
-	if (nControl->response[0] == c)
+	if (c.find(nControl->response[0]) != std::string::npos)
 		return 1;
 	return 0;
 }
@@ -367,7 +367,7 @@ int FtpClient::FtpAccess(const std::string &path, accesstype type, transfermode 
 		return 0;
 	}
 	sprintf(buf, "TYPE %c", mode);
-	if (!FtpSendCmd(buf, '2', nControl))
+	if (!FtpSendCmd(buf, "2", nControl))
 		return 0;
 
 	switch (type)
@@ -476,7 +476,7 @@ int FtpClient::FtpAcceptConnection(ftphandle *nData, ftphandle *nControl)
 	{
 		close(nData->handle);
 		nData->handle = 0;
-		ReadResponse('2', nControl);
+		ReadResponse("2", nControl);
 		rv = 0;
 	}
 
@@ -518,7 +518,7 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 	in.sin_family = AF_INET;
 	in.sin_len = sizeof(sockaddr_in);
 
-	if (!FtpSendCmd("PASV", '2', nControl))
+	if (!FtpSendCmd("PASV", "2", nControl))
 		return -1;
 	cp = strchr(nControl->response, '(');
 	if (cp == NULL)
@@ -538,7 +538,7 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 	{
 		char buf[512];
 		sprintf(buf, "REST %ld", mp_ftphandle->offset);
-		if (!FtpSendCmd(buf, '3', nControl))
+		if (!FtpSendCmd(buf, "3", nControl))
 			return 0;
 	}
 
@@ -575,7 +575,7 @@ int FtpClient::FtpOpenPasv(ftphandle *nControl, ftphandle **nData, transfermode 
 		return -1;
 	}
 
-	if (!ReadResponse('1', nControl))
+	if (!ReadResponse("1", nControl))
 	{
 		close(sData);
 		return -1;
@@ -700,7 +700,7 @@ int FtpClient::FtpOpenPort(ftphandle *nControl, ftphandle **nData, transfermode 
 			(unsigned char)sin.sa.sa_data[5],
 			(unsigned char)sin.sa.sa_data[0],
 			(unsigned char)sin.sa.sa_data[1]);
-	if (!FtpSendCmd(buf, '2', nControl))
+	if (!FtpSendCmd(buf, "2", nControl))
 	{
 		close(sData);
 		return -1;
@@ -710,7 +710,7 @@ int FtpClient::FtpOpenPort(ftphandle *nControl, ftphandle **nData, transfermode 
 	{
 		char buf[512];
 		sprintf(buf, "REST %ld", mp_ftphandle->offset);
-		if (!FtpSendCmd(buf, '3', nControl))
+		if (!FtpSendCmd(buf, "3", nControl))
 		{
 			close(sData);
 			return 0;
@@ -730,7 +730,7 @@ int FtpClient::FtpOpenPort(ftphandle *nControl, ftphandle **nData, transfermode 
 		return -1;
 	}
 
-	if (!FtpSendCmd(cmd, '1', nControl))
+	if (!FtpSendCmd(cmd, "1", nControl))
 	{
 		FtpClose(*nData);
 		*nData = NULL;
@@ -1002,7 +1002,7 @@ int FtpClient::FtpClose(ftphandle *nData)
 	ctrl = nData->ctrl;
 	free(nData);
 	if (ctrl)
-		return ReadResponse('2', ctrl);
+		return ReadResponse("2", ctrl);
 	return 1;
 }
 
@@ -1018,7 +1018,7 @@ int FtpClient::Quit()
 		strcpy(mp_ftphandle->response, "error: no anwser from server\n");
 		return 0;
 	}
-	FtpSendCmd("QUIT", '2', mp_ftphandle);
+	FtpSendCmd("QUIT", "2", mp_ftphandle);
 	shutdown(mp_ftphandle->handle, SHUT_WR);
 	struct linger lng = {1, 0};
 	setsockopt(mp_ftphandle->handle, SOL_SOCKET, SO_LINGER, &lng, sizeof(lng));
@@ -1062,7 +1062,7 @@ int FtpClient::RawRead(void *buf, int max, ftphandle *handle)
 int FtpClient::Site(const std::string &cmd)
 {
 	std::string tmp = "SITE " + cmd;
-	if (!FtpSendCmd(tmp, '2', mp_ftphandle))
+	if (!FtpSendCmd(tmp, "2", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1075,7 +1075,7 @@ int FtpClient::Site(const std::string &cmd)
 
 int FtpClient::Raw(const std::string &cmd)
 {
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1094,7 +1094,7 @@ int FtpClient::SysType(char *buf, int max)
 	int l = max;
 	char *b = buf;
 	char *s;
-	if (!FtpSendCmd("SYST", '2', mp_ftphandle))
+	if (!FtpSendCmd("SYST", "2", mp_ftphandle))
 		return 0;
 	s = &mp_ftphandle->response[4];
 	while ((--l) && (*s != ' '))
@@ -1111,7 +1111,7 @@ int FtpClient::SysType(char *buf, int max)
 int FtpClient::Mkdir(const std::string &path)
 {
 	std::string cmd = "MKD " + path;
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1124,7 +1124,7 @@ int FtpClient::Mkdir(const std::string &path)
 int FtpClient::Chdir(const std::string &path)
 {
 	std::string cmd = "CWD " + path;
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1136,7 +1136,7 @@ int FtpClient::Chdir(const std::string &path)
  */
 int FtpClient::Cdup()
 {
-	if (!FtpSendCmd("CDUP", '2', mp_ftphandle))
+	if (!FtpSendCmd("CDUP", "2", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1148,7 +1148,7 @@ int FtpClient::Cdup()
  */
 bool FtpClient::Noop()
 {
-	if (!FtpSendCmd("NOOP", '2', mp_ftphandle))
+	if (!FtpSendCmd("NOOP", "25", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1166,7 +1166,7 @@ bool FtpClient::Ping()
 int FtpClient::Rmdir(const std::string &path)
 {
 	std::string cmd = "RMD " + path;
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 	return 1;
 }
@@ -1229,11 +1229,11 @@ int FtpClient::Size(const std::string &path, int64_t *size)
 		return 0;
 
 	sprintf(cmd, "TYPE %c", FtpClient::transfermode::image);
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 
 	sprintf(cmd, "SIZE %s", path.c_str());
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		rv = 0;
 	else
 	{
@@ -1317,10 +1317,10 @@ int FtpClient::Put(const std::string &inputfile, const std::string &path, uint64
 int FtpClient::Rename(const std::string &src, const std::string &dst)
 {
 	std::string cmd = "RNFR " + src;
-	if (!FtpSendCmd(cmd, '3', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "3", mp_ftphandle))
 		return 0;
 	cmd = "RNTO " + dst;
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 
 	return 1;
@@ -1329,7 +1329,7 @@ int FtpClient::Rename(const std::string &src, const std::string &dst)
 int FtpClient::Delete(const std::string &path)
 {
 	std::string cmd = "DELE " + path;
-	if (!FtpSendCmd(cmd, '2', mp_ftphandle))
+	if (!FtpSendCmd(cmd, "2", mp_ftphandle))
 		return 0;
 	return 1;
 }

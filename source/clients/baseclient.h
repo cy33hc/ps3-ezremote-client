@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "httpclient/HTTPClient.h"
 #include "clients/remote_client.h"
 #include "common.h"
@@ -43,7 +44,6 @@ public:
     static int UploadProgressCallback(void* ptr, double dTotalToDownload, double dNowDownloaded, double dTotalToUpload, double dNowUploaded);
 
 protected:
-
     CHTTPClient *client;
     std::string base_path;
     std::string host_url;

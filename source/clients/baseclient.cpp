@@ -86,6 +86,7 @@ int BaseClient::Size(const std::string &path, int64_t *size)
             CHTTPClient::HttpResponse range_res;
             CHTTPClient::HeadersMap range_headers;
             range_headers["Range"] = "bytes=0-1";
+
             if (client->Get(encoded_url, range_headers, range_res))
             {
                 if (HTTP_SUCCESS(range_res.iCode))
@@ -113,6 +114,7 @@ int BaseClient::Get(const std::string &outputfile, const std::string &path, uint
     long status;
     bytes_transfered = 0;
     prev_tick = Util::GetTick();
+    CHTTPClient::HeadersMap headers;
 
     if (!Size(path, &bytes_to_download))
     {

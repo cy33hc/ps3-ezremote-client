@@ -42,6 +42,7 @@ extern bool file_transfering;
 extern char extract_zip_folder[];
 extern char zip_file_path[];
 extern std::vector<std::string> edit_buffer;
+extern int apply_native_filter_state;
 
 static ImVector<ImRect> s_GroupPanelLabelStack;
 
@@ -210,6 +211,8 @@ namespace Windows
     void AfterHttpPortChangeCallback(int ime_result);
     void AfterEditorCallback(int ime_result);
     void AfterUsernameCallback(int ime_result);
+    void AfterRemoteNativeFilterCallback(int ime_result);
+    void AfterRemoteNativeFilterCancelCallback(int ime_result);
 }
 
 #endif

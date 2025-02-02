@@ -72,6 +72,7 @@ bool select_url_inprogress = false;
 char extract_zip_folder[256];
 char zip_file_path[384];
 bool show_settings = false;
+int apply_native_filter_state;
 
 // Editor variables
 std::vector<std::string> edit_buffer;
@@ -120,6 +121,7 @@ namespace Windows
         overwrite_type = OVERWRITE_PROMPT;
         local_paste_files.clear();
         remote_paste_files.clear();
+        apply_native_filter_state = 2;
 
         Actions::RefreshLocalFiles(false);
     }
@@ -2160,21 +2162,20 @@ namespace Windows
             selected_action = ACTION_NONE;
             break;
         case ACTION_VIEW_LOCAL_PKG:
-            /* INSTALLER::ExtractLocalPkg(selected_local_file.path, TMP_SFO_PATH, TMP_ICON_PATH);
-            Textures::LoadImageFile(TMP_ICON_PATH, &texture);
-            sfo = FS::Load(TMP_SFO_PATH);
-            sfo_params = SFO::GetParams(sfo.data(), sfo.size());
-            show_pkg_info = true; */
             selected_action = ACTION_NONE;
             break;
         case ACTION_VIEW_REMOTE_PKG:
-            /* if (INSTALLER::ExtractRemotePkg(selected_remote_file.path, TMP_SFO_PATH, TMP_ICON_PATH))
-            {
-                Textures::LoadImageFile(TMP_ICON_PATH, &texture);
-                sfo = FS::Load(TMP_SFO_PATH);
-                sfo_params = SFO::GetParams(sfo.data(), sfo.size());
-                show_pkg_info = true;
-            } */
+            selected_action = ACTION_NONE;
+            break;
+        case ACTION_APPLY_REMOTE_NATIVE_FILTER:
+            ime_single_field = remote_filter;
+            ResetImeCallbacks();
+            ime_field_size = 31;
+            ime_callback = SingleValueImeCallback;
+            ime_after_update = AfterRemoteNativeFilterCallback;
+            ime_cancelled = AfterRemoteNativeFilterCancelCallback;
+            Dialog::initImeDialog(lang_strings[STR_FILTER], remote_filter, 31, OSK_PANEL_TYPE_DEFAULT, 50, 50);
+            gui_mode = GUI_MODE_IME;
             selected_action = ACTION_NONE;
             break;
         default:
@@ -2370,5 +2371,20 @@ namespace Windows
                 remote_settings->enable_bd = false;
             }
         }
+    }
+
+    void AfterRemoteNativeFilterCallback(int ime_result)
+    {
+        if (ime_result == IME_DIALOG_RESULT_FINISHED)
+        {
+            apply_native_filter_state = 1;
+            selected_action = ACTION_REFRESH_REMOTE_FILES;
+        }
+    }
+
+    void AfterRemoteNativeFilterCancelCallback(int ime_result)
+    {
+        apply_native_filter_state = 0;
+        selected_action = ACTION_REFRESH_REMOTE_FILES;
     }
 }

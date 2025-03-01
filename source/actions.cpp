@@ -7,6 +7,7 @@
 #include "clients/apache.h"
 #include "clients/archiveorg.h"
 #include "clients/ftpclient.h"
+#include "clients/github.h"
 #include "clients/iis.h"
 #include "clients/myrient.h"
 #include "clients/nfsclient.h"
@@ -1181,6 +1182,8 @@ namespace Actions
                 remoteclient = new ArchiveOrgClient();
             else if (strcmp(remote_settings->http_server_type, HTTP_SERVER_MYRIENT) == 0)
                 remoteclient = new MyrientClient();
+            else if (strcmp(remote_settings->http_server_type, HTTP_SERVER_GITHUB) == 0)
+                remoteclient = new GithubClient();
         }
         else if (strncmp(remote_settings->server, "webdavs://", 10) == 0 || strncmp(remote_settings->server, "webdav://", 9) == 0)
         {

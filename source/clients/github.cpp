@@ -228,3 +228,16 @@ bool GithubClient::ParseReleases()
 
     return 1;
 }
+
+int GithubClient::Quit()
+{
+    m_client.Quit();
+    
+    if (client != nullptr)
+    {
+        client->CleanupSession();
+        delete client;
+        client = nullptr;
+    }
+    return 1;
+}

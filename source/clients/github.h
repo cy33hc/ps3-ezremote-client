@@ -16,6 +16,7 @@ public:
     int Get(const std::string &outputfile, const std::string &path, uint64_t offset=0);
     int GetRange(const std::string &path, void *buffer, uint64_t size, uint64_t offset);
     int Head(const std::string &path, void *buffer, uint64_t len);
+    int Quit();
 
 private:
     struct GitAsset

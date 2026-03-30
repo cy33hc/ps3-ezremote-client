@@ -42,6 +42,7 @@ public:
     static std::string UnEscape(const std::string &url);
     static int DownloadProgressCallback(void* ptr, double dTotalToDownload, double dNowDownloaded, double dTotalToUpload, double dNowUploaded);
     static int UploadProgressCallback(void* ptr, double dTotalToDownload, double dNowDownloaded, double dTotalToUpload, double dNowUploaded);
+    static int SocketOptCallback(void* ptr, int fd, uint32_t socktype);
 
 protected:
     CHTTPClient *client;

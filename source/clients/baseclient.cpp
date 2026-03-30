@@ -17,6 +17,14 @@ BaseClient::~BaseClient()
         delete client;
 };
 
+int BaseClient::SocketOptCallback(void* ptr, int fd, uint32_t socktype)
+{
+    int size = 65536;
+    setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &size, sizeof(size));
+    setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
+    return 0;
+}
+
 int BaseClient::DownloadProgressCallback(void* ptr, double dTotalToDownload, double dNowDownloaded, double dTotalToUpload, double dNowUploaded)
 {
     CHTTPClient::ProgressFnStruct *progress_data = (CHTTPClient::ProgressFnStruct*) ptr;
@@ -43,10 +51,15 @@ int BaseClient::Connect(const std::string &url, const std::string &username, con
         this->host_url = url.substr(0, root_pos);
         this->base_path = url.substr(root_pos);
     }
+
     client = new CHTTPClient([](const std::string& log){});
-    client->SetBasicAuth(username, password);
+    if (!username.empty())
+    {
+        client->SetBasicAuth(username, password);
+    }
     client->InitSession(true, CHTTPClient::SettingsFlag::NO_FLAGS);
     client->SetCertificateFile(CACERT_FILE);
+    client->SetSocketOptFnCallback(SocketOptCallback);
 
     if (Ping())
         this->connected = true;

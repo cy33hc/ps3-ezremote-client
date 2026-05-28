@@ -37,9 +37,15 @@ bool ImGui_ImplTiny3D_Init()
 	IM_ASSERT(io.BackendRendererUserData == NULL && "Already initialized a renderer backend!");
 
 	// setup display
-	io.DisplaySize.x = 800;
-	io.DisplaySize.y = 600;
-	tiny3d_UserViewport(1, 0, 0, io.DisplaySize.x, io.DisplaySize.y, 0, 0);
+	if (io.DisplaySize.x >= 0.0f && io.DisplaySize.y >= 0.0f)
+	{
+		tiny3d_UserViewport(1, 0, 0, io.DisplaySize.x, io.DisplaySize.y, 0, 0);
+	}
+	else
+	{
+		io.DisplaySize.x = 848;
+		io.DisplaySize.y = 512;
+	}
 
 	// Setup backend capabilities flags
 	ImGui_ImplTiny3D_Data *bd = IM_NEW(ImGui_ImplTiny3D_Data)();
@@ -308,13 +314,11 @@ void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 				Tiny3DTexture *texture = (Tiny3DTexture *)pcmd->TextureId;
 				tiny3d_SetTexture(0, texture->offset, texture->width, texture->height, texture->pitch, TINY3D_TEX_FORMAT_A8R8G8B8, TEXTURE_LINEAR);
 
-				// Clip rect for this draw command, clamped to the display bounds (848x512)
-				const float display_w = 848.0f;
-				const float display_h = 512.0f;
-				const float clip_x0 = pcmd->ClipRect.x > 0.0f      ? pcmd->ClipRect.x : 0.0f;
-				const float clip_y0 = pcmd->ClipRect.y > 0.0f      ? pcmd->ClipRect.y : 0.0f;
-				const float clip_x1 = pcmd->ClipRect.z < display_w ? pcmd->ClipRect.z : display_w;
-				const float clip_y1 = pcmd->ClipRect.w < display_h ? pcmd->ClipRect.w : display_h;
+				// Clip rect for this draw command (in screen-space pixels)
+				const float clip_x0 = pcmd->ClipRect.x;
+				const float clip_y0 = pcmd->ClipRect.y;
+				const float clip_x1 = pcmd->ClipRect.z;
+				const float clip_y1 = pcmd->ClipRect.w;
 
 				tiny3d_SetPolygon(TINY3D_TRIANGLES);
 

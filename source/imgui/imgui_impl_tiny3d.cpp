@@ -181,6 +181,118 @@ static void ImGui_ImplTiny3D_SetupRenderState(ImDrawData *draw_data, int fb_widt
 {
 }
 
+// ---------------------------------------------------------------------------
+// Software clipping helpers
+// ---------------------------------------------------------------------------
+
+struct ClipVertex
+{
+	float x, y;
+	float u, v;
+	u32   col; // already byte-swapped to RGBA for tiny3d
+};
+
+// Clip a convex polygon against one half-plane defined by:
+//   axis=0 -> clip x >= limit  (left edge)
+//   axis=0 -> clip x <= limit  (right edge, negate)
+//   axis=1 -> clip y >= limit  (top edge)
+//   axis=1 -> clip y <= limit  (bottom edge, negate)
+// We use the Sutherland-Hodgman single-plane clip.
+// inside(v) == true means the vertex is on the kept side.
+static int ClipPolygonAgainstPlane(
+	const ClipVertex *in, int in_count,
+	ClipVertex *out,
+	int axis, float limit, bool keep_greater)
+{
+	if (in_count == 0)
+		return 0;
+
+	int out_count = 0;
+
+	auto inside = [&](const ClipVertex &v) -> bool {
+		float val = (axis == 0) ? v.x : v.y;
+		return keep_greater ? (val >= limit) : (val <= limit);
+	};
+
+	auto lerp_vert = [](const ClipVertex &a, const ClipVertex &b, float t) -> ClipVertex {
+		ClipVertex r;
+		r.x   = a.x   + t * (b.x   - a.x);
+		r.y   = a.y   + t * (b.y   - a.y);
+		r.u   = a.u   + t * (b.u   - a.u);
+		r.v   = a.v   + t * (b.v   - a.v);
+		// Interpolate each colour channel independently
+		u8 a_r = (a.col >> 24) & 0xFF, b_r = (b.col >> 24) & 0xFF;
+		u8 a_g = (a.col >> 16) & 0xFF, b_g = (b.col >> 16) & 0xFF;
+		u8 a_b = (a.col >>  8) & 0xFF, b_b = (b.col >>  8) & 0xFF;
+		u8 a_a = (a.col      ) & 0xFF, b_a = (b.col      ) & 0xFF;
+		u8 r_r = (u8)(a_r + t * (b_r - a_r));
+		u8 r_g = (u8)(a_g + t * (b_g - a_g));
+		u8 r_b = (u8)(a_b + t * (b_b - a_b));
+		u8 r_a = (u8)(a_a + t * (b_a - a_a));
+		r.col = ((u32)r_r << 24) | ((u32)r_g << 16) | ((u32)r_b << 8) | r_a;
+		return r;
+	};
+
+	for (int i = 0; i < in_count; i++)
+	{
+		const ClipVertex &cur  = in[i];
+		const ClipVertex &next = in[(i + 1) % in_count];
+
+		bool cur_in  = inside(cur);
+		bool next_in = inside(next);
+
+		if (cur_in)
+		{
+			out[out_count++] = cur;
+			if (!next_in)
+			{
+				// Compute intersection
+				float cur_val  = (axis == 0) ? cur.x  : cur.y;
+				float next_val = (axis == 0) ? next.x : next.y;
+				float t = (limit - cur_val) / (next_val - cur_val);
+				out[out_count++] = lerp_vert(cur, next, t);
+			}
+		}
+		else if (next_in)
+		{
+			// Entering: emit intersection
+			float cur_val  = (axis == 0) ? cur.x  : cur.y;
+			float next_val = (axis == 0) ? next.x : next.y;
+			float t = (limit - cur_val) / (next_val - cur_val);
+			out[out_count++] = lerp_vert(cur, next, t);
+		}
+	}
+	return out_count;
+}
+
+// Clip a triangle (3 vertices) against all 4 edges of clip_rect.
+// Returns the resulting polygon in 'out' (up to 7 vertices for a triangle
+// clipped against 4 planes). Returns vertex count (0 if fully clipped).
+static int ClipTriangle(
+	const ClipVertex tri[3],
+	ClipVertex *out,
+	float clip_x0, float clip_y0, float clip_x1, float clip_y1)
+{
+	// Temporary buffers: a triangle clipped against 4 planes yields at most 7 verts
+	ClipVertex buf0[8], buf1[8];
+
+	buf0[0] = tri[0];
+	buf0[1] = tri[1];
+	buf0[2] = tri[2];
+	int count = 3;
+
+	count = ClipPolygonAgainstPlane(buf0, count, buf1, 0, clip_x0, true);  // x >= x0
+	if (count == 0) return 0;
+	count = ClipPolygonAgainstPlane(buf1, count, buf0, 0, clip_x1, false); // x <= x1
+	if (count == 0) return 0;
+	count = ClipPolygonAgainstPlane(buf0, count, buf1, 1, clip_y0, true);  // y >= y0
+	if (count == 0) return 0;
+	count = ClipPolygonAgainstPlane(buf1, count, out,  1, clip_y1, false); // y <= y1
+	return count;
+}
+
+// ---------------------------------------------------------------------------
+
 void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 {
 	// Render command lists
@@ -188,7 +300,7 @@ void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 	{
 		const ImDrawList *cmd_list = draw_data->CmdLists[n];
 		const ImDrawVert *vtx_buffer = cmd_list->VtxBuffer.Data;
-		const ImDrawIdx *idx_buffer = cmd_list->IdxBuffer.Data;
+		const ImDrawIdx  *idx_buffer = cmd_list->IdxBuffer.Data;
 
 		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 		{
@@ -199,26 +311,58 @@ void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 			}
 			else
 			{
-				Tiny3DTexture *texture = pcmd->TextureId;
+				Tiny3DTexture *texture = (Tiny3DTexture *)pcmd->TextureId;
 				tiny3d_SetTexture(0, texture->offset, texture->width, texture->height, texture->pitch, TINY3D_TEX_FORMAT_A8R8G8B8, TEXTURE_LINEAR);
 
+				// Clip rect for this draw command (in screen-space pixels)
+				const float clip_x0 = pcmd->ClipRect.x;
+				const float clip_y0 = pcmd->ClipRect.y;
+				const float clip_x1 = pcmd->ClipRect.z;
+				const float clip_y1 = pcmd->ClipRect.w;
+
 				tiny3d_SetPolygon(TINY3D_TRIANGLES);
-				u8 *indices = (u8 *)idx_buffer;
 
-				for (int idx = 0; idx < pcmd->ElemCount; idx++)
+				const u8 *indices = (const u8 *)idx_buffer;
+
+				// Process one triangle (3 indices) at a time
+				for (int idx = 0; idx + 2 < (int)pcmd->ElemCount; idx += 3)
 				{
-					u16 index = *((u16 *)(indices + sizeof(ImDrawIdx) * idx));
-					float *vertices = (float *)((const char *)vtx_buffer + IM_OFFSETOF(ImDrawVert, pos) + sizeof(ImDrawVert) * index);
-					float *texcoords = (float *)((const char *)vtx_buffer + IM_OFFSETOF(ImDrawVert, uv) + sizeof(ImDrawVert) * index);
-					u32 *colors = (u32 *)((const char *)vtx_buffer + IM_OFFSETOF(ImDrawVert, col) + sizeof(ImDrawVert) * index);
+					ClipVertex tri[3];
 
-					u32 rgba = ((*colors & 0xFF000000) >> 24) |
-									((*colors & 0x00FF0000) >> 8) |
-									((*colors & 0x0000FF00) << 8) |
-									((*colors & 0x000000FF) << 24);
-					tiny3d_VertexPos(vertices[0], vertices[1], 1.0f);
-					tiny3d_VertexTexture(texcoords[0], texcoords[1]);
-					tiny3d_VertexColor(rgba);
+					for (int v = 0; v < 3; v++)
+					{
+						u16 index = *((const u16 *)(indices + sizeof(ImDrawIdx) * (idx + v)));
+						const ImDrawVert &vert = vtx_buffer[index];
+
+						u32 col = vert.col;
+						// ImGui stores RGBA; tiny3d expects RGBA with bytes in big-endian order
+						u32 rgba = ((col & 0xFF000000) >> 24) |
+						           ((col & 0x00FF0000) >>  8) |
+						           ((col & 0x0000FF00) <<  8) |
+						           ((col & 0x000000FF) << 24);
+
+						tri[v].x   = vert.pos.x;
+						tri[v].y   = vert.pos.y;
+						tri[v].u   = vert.uv.x;
+						tri[v].v   = vert.uv.y;
+						tri[v].col = rgba;
+					}
+
+					// Software-clip the triangle against the command's clip rect
+					ClipVertex clipped[8];
+					int count = ClipTriangle(tri, clipped, clip_x0, clip_y0, clip_x1, clip_y1);
+
+					// Fan-triangulate the resulting polygon and emit vertices
+					for (int t = 1; t + 1 < count; t++)
+					{
+						const ClipVertex *fan[3] = { &clipped[0], &clipped[t], &clipped[t + 1] };
+						for (int v = 0; v < 3; v++)
+						{
+							tiny3d_VertexPos(fan[v]->x, fan[v]->y, 1.0f);
+							tiny3d_VertexTexture(fan[v]->u, fan[v]->v);
+							tiny3d_VertexColor(fan[v]->col);
+						}
+					}
 				}
 				tiny3d_End();
 			}

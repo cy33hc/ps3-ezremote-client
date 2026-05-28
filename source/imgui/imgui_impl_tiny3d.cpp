@@ -320,9 +320,8 @@ void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 				const float clip_x1 = pcmd->ClipRect.z;
 				const float clip_y1 = pcmd->ClipRect.w;
 
-				tiny3d_SetPolygon(TINY3D_TRIANGLES);
-
 				const u8 *indices = (const u8 *)idx_buffer;
+				bool polygon_open = false;
 
 				// Process one triangle (3 indices) at a time
 				for (int idx = 0; idx + 2 < (int)pcmd->ElemCount; idx += 3)
@@ -351,6 +350,15 @@ void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 					// Software-clip the triangle against the command's clip rect
 					ClipVertex clipped[8];
 					int count = ClipTriangle(tri, clipped, clip_x0, clip_y0, clip_x1, clip_y1);
+					if (count == 0)
+						continue;
+
+					// Open the polygon block lazily on the first visible triangle
+					if (!polygon_open)
+					{
+						tiny3d_SetPolygon(TINY3D_TRIANGLES);
+						polygon_open = true;
+					}
 
 					// Fan-triangulate the resulting polygon and emit vertices
 					for (int t = 1; t + 1 < count; t++)
@@ -364,7 +372,8 @@ void ImGui_ImplTiny3D_RenderDrawData(ImDrawData *draw_data)
 						}
 					}
 				}
-				tiny3d_End();
+				if (polygon_open)
+					tiny3d_End();
 			}
 			idx_buffer += pcmd->ElemCount;
 		}

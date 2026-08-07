@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <tiny3d.h>
+#include <unistd.h>
 
 #include "imgui.h"
 #include "windows.h"
@@ -39,6 +40,7 @@ namespace GUI
 				ImGui_ImplTiny3D_RenderDrawData(ImGui::GetDrawData());
 
 				tiny3d_Flip();
+				usleep(10000);
 			}
 			else if (gui_mode == GUI_MODE_IME)
 			{
